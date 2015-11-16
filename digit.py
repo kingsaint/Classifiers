@@ -34,7 +34,7 @@ def parse_training_data():
 	for line in f:
 	    digitlabels.append(int(line))
 
-def get_multi_zone(digit, label):
+def get_multi_zone(digit):
     white = 0
     black = 0
     for line in digit:
@@ -49,7 +49,7 @@ def get_multi_zone(digit, label):
     #print black
     return float(black)/(black+white)
 
-def get_loops(digit, label):
+def get_loops_h(digit):
     EMPTY = 0
     FILLED = 1
     LOOP = 2
@@ -85,10 +85,44 @@ def get_loops(digit, label):
 		looparray[index] = FILLED
 
     print "\n".join(str(x) for x in looparray)
+def chunkstring(string, length):
+    return list(string[0+i:length+i] for i in range(0, len(string), length))
+
+def get_block_density(digit):
+    chunks = []
+    temp_chunks = []
+    for i in range(0, 6):
+	temp_chunks.append([])
+    for d in digit:
+	for i in range(0, 6):
+	    if len(temp_chunks[i]) == 4:
+		chunks.append(temp_chunks[i])
+		temp_chunks[i] = []
+	strings = chunkstring(d, 5)
+	print strings
+	for i in range(0, 6):
+	    temp_chunks[i].append(strings[i])
+    #print chunks
+    white = 0
+    black = 0
+    percentage = []
+    for chunk in chunks:
+	white = 0
+	black = 0
+	for c in chunk:
+	    for d in c:
+		if d == ' ':
+		    white+= 1
+		else:
+		    black+=1
+	percentage.append(float(black)/(black + white))
+    return percentage
 
 def extract_features(digit, label):
-   feature_1 = get_multi_zone(digit, label)
-   feature_2 = get_loops(digit, label)
+   feature_1 = get_multi_zone(digit)
+   feature_2 = get_loops_h(digit)
+   #feature_3 = get_loops(digit, 1)
+   feature_4 = get_block_density(digit)
 
 def main():
     parse_training_data()
