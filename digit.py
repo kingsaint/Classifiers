@@ -9,19 +9,27 @@ def parse_training_data():
     with open(DIRECTORY + "/trainingimages", "rb") as f:
 	prev = BEGIN
 	temp = []
+	counter = 0
 	for line in f:
 	    if line.isspace():
 		if prev == MIDDLE:
-		    if len(temp) > 5:
+		    if len(temp) >= DIGIT_LENGTH:
 			digitdata.append(temp)
 			temp = []
 			prev = END
+			counter = 0
 		    else:
+			counter += 1
+			temp.append(line)
 			continue
 		continue
 	    else:
+		counter += 1
 		prev = MIDDLE
-		temp.append(line)
+		temp.append(line.replace("\n", "").ljust(30, " "))
+		print len(line.replace("\n", "").ljust(30, " "))
+    #for digit in digitdata:
+	#for d in digit:
     with open(DIRECTORY + "/traininglabels", "rb") as f:
 	for line in f:
 	    digitlabels.append(int(line))
@@ -84,12 +92,20 @@ def extract_features(digit, label):
 
 def main():
     parse_training_data()
+    maxl = 0
+    maxd = []
     for d,l in zip(digitdata, digitlabels):
 	print "^"*50
-	print "".join(d)
+	print "\n".join(d)
 	print l
-	print len(d)
+	if len(d) == 25:
+	   maxd.append(d)
+	maxl = max(len(d), maxl)
 	print "$"*50
 	extract_features(d, l)
+    print maxl
+    for d in maxd:
+	print "&"*50
+	print "".join(d)
 
 main()
