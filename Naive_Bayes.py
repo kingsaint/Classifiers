@@ -19,10 +19,10 @@ class Naive_Bayes:
 
 	def preprocess(self):
 
-		label_count = []
+		self.label_count = []
 		for i in range(0,self.num_of_labels):
-			label_count.append(0)
-		total_count = 0
+			self.label_count.append(0)
+		self.total_count = 0
 		feature_count = len(self.training_data[0])-2
 
 		features = []
@@ -30,7 +30,7 @@ class Naive_Bayes:
 		values = []
 	
 		print feature_count	
-		print label_count
+		print self.label_count
 
 		for j in range(0,feature_count):
 			label = []
@@ -44,8 +44,8 @@ class Naive_Bayes:
 		
 		for i in self.training_data:
 			#print len(i)
-			label_count[i[len(i)-1]] += 1
-			total_count += 1
+			self.label_count[i[len(i)-1]] += 1
+			self.total_count += 1
 			for k in range(0,self.num_of_labels):
 					if i[len(i)-1] == k:
 						for j in range(0,feature_count):
@@ -54,15 +54,14 @@ class Naive_Bayes:
 							features[j][k].append(i[j+1])
 		
 
-		print label_count
-		print "***********************"	
-		
+		print self.label_count
+		print "***********************"
 		print features
 	
 		cols_mean = []
-		mean = []
+		#mean = []
 		cols_sd = []
-		sd = []
+		#sd = []
 		
 		for i in features:
 			cols_mean = []
@@ -70,23 +69,42 @@ class Naive_Bayes:
 			for j in i:
 				cols_mean.append(numpy.mean(j))
 				cols_sd.append(numpy.std(j))
-			mean.append(cols_mean)
-			sd.append(cols_sd)
+			self.mean.append(cols_mean)
+			self.sd.append(cols_sd)
 
-		print mean
-		print sd
+		print self.mean
+		print self.sd
 
 	def train_model(self):
 
-		preprocess()
-		for i in label_count:
-			prior_prob.append(label_count[i]/total_count)
+		self.preprocess()
+
+		for i in range(0,len(self.label_count)):
+			self.prior_prob.append(self.label_count[i]/float(self.total_count))
 		print "****prior probabilities******"
 
-		print prior_prob
+		print self.prior_prob
 
-				
-					
+	def normal_dist(self,i,j,data):
+		
+		return ((1/numpy.sqrt(2*3.14)*self.sd[j-1][i])*numpy.power(2.7,-((data - self.mean[j-1][i])*(data - self.mean[j-1][i])/(2*self.sd[j-1][i]*self.sd[j-1][i]))))
+
+	def test_model(self):
+		for i in range(0,self.num_of_labels):
+			joint_prob = 1
+			for j in range(1,len(self.test_data)):
+				joint_prob = joint_prob*self.normal_dist(i,j,self.test_data[j])
+			self.posterior_prob.append(self.prior_prob[i]*joint_prob)
+
+		max_posterior_prob = self.posterior_prob[0]
+ 		output_class = 0
+		for i in range(0,self.num_of_labels):
+			if self.posterior_prob[i] > max_posterior_prob :
+				max_posterior_prob = self.posterior_prob[i]
+				output_class = i
+		return output_class
+
+		
 
 
 	
