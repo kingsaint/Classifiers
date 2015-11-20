@@ -1,40 +1,39 @@
-import Naive_Bayes
+from Naive_Bayes import Naive_Bayes
 
 DIRECTORY = "digitdata"
-DIGIT_LENGTH = 20
+DIGIT_LENGTH = 28
 digitdata = []
 digitlabels = []
+digittestdata = []
 def parse_training_data():
-    BEGIN = 0
-    MIDDLE = 1
-    END = 2
     with open(DIRECTORY + "/trainingimages", "rb") as f:
-	prev = BEGIN
 	temp = []
-	counter = 0
+	counter = 1
 	for line in f:
-	    if line.isspace():
-		if prev == MIDDLE:
-		    if len(temp) >= DIGIT_LENGTH:
-			digitdata.append(temp)
-			temp = []
-			prev = END
-			counter = 0
-		    else:
-			counter += 1
-			temp.append(line)
-			continue
-		continue
+	    if counter >= DIGIT_LENGTH:
+		digitdata.append(temp)
+		temp = []
+		counter = 1
 	    else:
-		counter += 1
-		prev = MIDDLE
 		temp.append(line.replace("\n", "").ljust(30, " "))
-		print len(line.replace("\n", "").ljust(30, " "))
-    #for digit in digitdata:
-	#for d in digit:
+		counter += 1
     with open(DIRECTORY + "/traininglabels", "rb") as f:
 	for line in f:
 	    digitlabels.append(int(line))
+
+def parse_testing_data():
+    with open(DIRECTORY + "/testimages", "rb") as f:
+	temp = []
+	counter = 1
+	for line in f:
+	    if counter >= DIGIT_LENGTH:
+		digittestdata.append(temp)
+		temp = []
+		counter = 1
+	    else:
+		temp.append(line.replace("\n", "").ljust(30, " "))
+		counter += 1
+
 
 def get_multi_zone(digit):
     white = 0
@@ -102,7 +101,7 @@ def get_block_density(digit):
 		chunks.append(temp_chunks[i])
 		temp_chunks[i] = []
 	strings = chunkstring(d, 5)
-	print strings
+	#print strings
 	for i in range(0, 6):
 	    temp_chunks[i].append(strings[i])
     #print chunks
@@ -121,7 +120,7 @@ def get_block_density(digit):
 	percentage.append(float(black)/(black + white))
     return percentage
 
-def extract_features(digit, label):
+def extract_features(digit):
    feature_1 = get_multi_zone(digit)
    feature_2 = get_loops_h(digit)
    #feature_3 = get_loops(digit, 1)
@@ -130,23 +129,42 @@ def extract_features(digit, label):
 
 def main():
     parse_training_data()
-    maxl = 0
-    maxd = []
-    feature_matrix = []
+    train_matrix = []
+    i = 0
     for d,l in zip(digitdata, digitlabels):
 	print "^"*50
 	print "\n".join(d)
 	print l
-	if len(d) == 25:
-	   maxd.append(d)
-	maxl = max(len(d), maxl)
 	print "$"*50
-	features = extract_features(d, l)
-	feature_matrix.append([0] + features + l)
-    #print maxl
-    #for d in maxd:
-	#print "&"*50
-	#print "".join(d)
-    nbClassifier = Naive_Bayes(feature_matrix, len(digit_labels), testdata)
+	features = extract_features(d)
+	train_matrix.append([i] + features + [l])
+	i+=1
+    print "train_matrix"
+    for train in train_matrix:
+	print len(train)
+    #print train_matrix
+    parse_testing_data()
+
+    test_matrix = []
+    i = 0
+    for d in digittestdata:
+	print "^"*50
+	print "\n".join(d)
+	print l
+	print "$"*50
+	features = extract_features(d)
+	test_matrix.append([i] + features)
+	i+= 1
+
+    print "test_matrix"
+    #print test_matrix
+    for test in test_matrix:
+	print len(test)
+
+    nb = Naive_Bayes(train_matrix, 9,test_matrix )
+    nb.preprocess()
+    nb.train_model()
+    c = nb.test_model()
+    print c
 
 main()
