@@ -1,3 +1,5 @@
+import Naive_Bayes
+
 DIRECTORY = "digitdata"
 DIGIT_LENGTH = 20
 digitdata = []
@@ -84,7 +86,8 @@ def get_loops_h(digit):
 	    else:
 		looparray[index] = FILLED
 
-    print "\n".join(str(x) for x in looparray)
+    return looparray
+    #print "\n".join(str(x) for x in looparray)
 def chunkstring(string, length):
     return list(string[0+i:length+i] for i in range(0, len(string), length))
 
@@ -123,11 +126,13 @@ def extract_features(digit, label):
    feature_2 = get_loops_h(digit)
    #feature_3 = get_loops(digit, 1)
    feature_4 = get_block_density(digit)
+   return [feature_1] + feature_2 + feature_4
 
 def main():
     parse_training_data()
     maxl = 0
     maxd = []
+    feature_matrix = []
     for d,l in zip(digitdata, digitlabels):
 	print "^"*50
 	print "\n".join(d)
@@ -136,10 +141,12 @@ def main():
 	   maxd.append(d)
 	maxl = max(len(d), maxl)
 	print "$"*50
-	extract_features(d, l)
-    print maxl
-    for d in maxd:
-	print "&"*50
-	print "".join(d)
+	features = extract_features(d, l)
+	feature_matrix.append([0] + features + l)
+    #print maxl
+    #for d in maxd:
+	#print "&"*50
+	#print "".join(d)
+    nbClassifier = Naive_Bayes(feature_matrix, len(digit_labels), testdata)
 
 main()
