@@ -161,7 +161,7 @@ def main():
     for test in test_matrix:
 	print len(test)
 
-    nb = Naive_Bayes(train_matrix, 9,test_matrix )
+    nb = Naive_Bayes(train_matrix, 10,test_matrix )
     nb.preprocess()
     nb.train_model()
     c = nb.test_model()
