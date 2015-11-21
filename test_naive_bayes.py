@@ -28,14 +28,18 @@ def main():
 
 	print data
 
-	test = [1,6,130,8]
+	t1 = [1,6,130,8]
+	t2 = [2,5.2,170,9]
+
+	test = []
+	test.append(t1)
+	test.append(t2)
 	
 	nb = Naive_Bayes(data,2,test)
 	nb.preprocess()
 	nb.train_model()
-	c = nb.test_model()
+	nb.test_model()
 
-	print c
 
 main()
 	
