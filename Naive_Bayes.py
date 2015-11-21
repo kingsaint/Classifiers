@@ -57,6 +57,7 @@ class Naive_Bayes:
 	print self.label_count
 	print "***********************"
 	print features
+	print "***********"
 
 	cols_mean = []
 	#mean = []
@@ -77,8 +78,6 @@ class Naive_Bayes:
 
     def train_model(self):
 
-	self.preprocess()
-
 	for i in range(0,len(self.label_count)):
 	    self.prior_prob.append(self.label_count[i]/float(self.total_count))
 	print "****prior probabilities******"
@@ -91,18 +90,18 @@ class Naive_Bayes:
 
     def test_model(self):
 	for i in range(0,self.num_of_labels):
-	    joint_prob = 1
-	    for j in range(1,len(self.test_data)):
-		joint_prob = joint_prob*self.normal_dist(i,j,self.test_data[j])
-	    self.posterior_prob.append(self.prior_prob[i]*joint_prob)
-
-	    max_posterior_prob = self.posterior_prob[0]
-	    output_class = 0
-	    for i in range(0,self.num_of_labels):
+		joint_prob = 1
+		for j in range(1,len(self.test_data)):
+			joint_prob = joint_prob*self.normal_dist(i,j,self.test_data[j])
+		self.posterior_prob.append(self.prior_prob[i]*joint_prob)
+		
+	max_posterior_prob = self.posterior_prob[0]
+	output_class = 0
+	for i in range(0,self.num_of_labels):
 		if self.posterior_prob[i] > max_posterior_prob :
-		    max_posterior_prob = self.posterior_prob[i]
-		    output_class = i
-	    return output_class
+			max_posterior_prob = self.posterior_prob[i]
+			output_class = i
+	return output_class
 
 
 
