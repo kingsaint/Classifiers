@@ -89,19 +89,21 @@ class Naive_Bayes:
 	return ((1/numpy.sqrt(2*3.14)*self.sd[j-1][i])*numpy.power(2.7,-((data - self.mean[j-1][i])*(data - self.mean[j-1][i])/(2*self.sd[j-1][i]*self.sd[j-1][i]))))
 
     def test_model(self):
-	for i in range(0,self.num_of_labels):
-		joint_prob = 1
-		for j in range(1,len(self.test_data)):
-			joint_prob = joint_prob*self.normal_dist(i,j,self.test_data[j])
-		self.posterior_prob.append(self.prior_prob[i]*joint_prob)
+	for t in self.test_data:
+		self.posterior_prob = []
+		for i in range(0,self.num_of_labels):
+			joint_prob = 1
+			for j in range(1,len(t)):
+				joint_prob = joint_prob*self.normal_dist(i,j,t[j])
+			self.posterior_prob.append(self.prior_prob[i]*joint_prob)
 		
-	max_posterior_prob = self.posterior_prob[0]
-	output_class = 0
-	for i in range(0,self.num_of_labels):
-		if self.posterior_prob[i] > max_posterior_prob :
-			max_posterior_prob = self.posterior_prob[i]
-			output_class = i
-	return output_class
+		max_posterior_prob = self.posterior_prob[0]
+		output_class = 0
+		for i in range(0,self.num_of_labels):
+			if self.posterior_prob[i] > max_posterior_prob :
+				max_posterior_prob = self.posterior_prob[i]
+				output_class = i
+		print output_class
 
 
 
