@@ -139,27 +139,29 @@ def main():
 	features = extract_features(d)
 	train_matrix.append([i] + features + [l])
 	i+=1
-    print "train_matrix"
-    for train in train_matrix:
-	print len(train)
+    print "Number of featurees: %s"%(len(train_matrix[0]))
+    #print "train_matrix"
+    #for train in train_matrix:
+	#print len(train)
     #print train_matrix
     parse_testing_data()
 
     test_matrix = []
     i = 0
+    print '\n'.join(digittestdata[0])
     for d in digittestdata:
-	print "^"*50
-	print "\n".join(d)
-	print l
-	print "$"*50
+	#print "^"*50
+	#print "\n".join(d)
+	#print l
+	#print "$"*50
 	features = extract_features(d)
 	test_matrix.append([i] + features)
 	i+= 1
 
-    print "test_matrix"
+    #print "test_matrix"
     #print test_matrix
-    for test in test_matrix:
-	print len(test)
+    #for test in test_matrix:
+	#print len(test)
 
     nb = Naive_Bayes(train_matrix, 10,test_matrix )
     nb.preprocess()
