@@ -96,7 +96,7 @@ class Naive_Bayes:
 			for j in range(1,len(t)):
 				joint_prob = joint_prob*self.normal_dist(i,j,t[j])
 			self.posterior_prob.append(self.prior_prob[i]*joint_prob)
-		
+
 		max_posterior_prob = self.posterior_prob[0]
 		output_class = 0
 		for i in range(0,self.num_of_labels):
