@@ -14,6 +14,8 @@ class Digitdata:
 		self.image = image
 		self.label = label
 
+Class XYZ:
+
 
 
 

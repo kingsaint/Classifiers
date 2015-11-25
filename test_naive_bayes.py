@@ -7,8 +7,8 @@ def main():
 	# training data has the following attributes |ID | feature 1 | feature 2 |...|Class_label|. Where ID is just an index( pseudo column)
 	# test data has the following attributes |ID | feature 1 | feature 2 |.... . Where ID is just an index( pseudo column)
 
-	r1 = [1,1,2,3,1]
-	r2 = [2,4,5,6,2]
+	r1 = [1,1,2,3,0]
+	r2 = [2,4,5,6,1]
        # r3 = [3,5.58,170,12,1]
 	#r4 = [4,5.92,165,10,1]
 	#r5 = [5,5,100,6,0]
