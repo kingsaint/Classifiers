@@ -94,9 +94,7 @@ def get_loops_horizontal(digit):
 def chunkstring(string, length):
     return list(string[0+i:length+i] for i in range(0, len(string), length))
 
-def get_block_density(digit):
-    ROWS = 4
-    COLS = 10
+def get_chunks_string(ROWS, COLS, digit, ):
     chunks = []
     temp_chunks = []
     for i in range(0, COLS):
@@ -110,7 +108,11 @@ def get_block_density(digit):
 	#print strings
 	for i in range(0, COLS):
 	    temp_chunks[i].append(strings[i])
-    #print chunks
+    return chunks
+
+
+def get_block_density(digit):
+    chunks = get_chunks_string(4, 10, digit)    #print chunks
     white = 0
     black = 0
     percentage = []
@@ -245,7 +247,35 @@ def get_loops(digit):
     #return len(numColors)
     return temp_digit_max
 
-def get_diagonals(digit):
+def get_outline_text(digit):
+    temp_digit = []
+    x = 0
+    for line in digit:
+	y = 0
+	temp = ""
+	for char in line:
+	    #print "(%s, %s)"%(x,y)
+	    if char == ' ':
+		temp+=" "
+	    else:
+		if len(digit) -1 <=x:
+		    if digit[x][y] == ' ' or digit[x-1][y] == ' ' or digit[x][y+1] == ' ' or digit[x][y-1] != ' ':
+			#print "%s,%s->%s"%(x, y, "BLACK1")
+			temp+="*"
+		    else:
+			temp+=" "
+
+		elif digit[x+1][y] == ' ' or digit[x-1][y] == ' ' or digit[x][y+1] == ' ' or digit[x][y-1] == ' ':
+		    #print "%s,%s->%s"%(x, y, "BLACK2")
+		    temp+="*"
+		else:
+		    temp+=" "
+	    y+= 1
+	temp_digit.append(temp)
+	x += 1
+    return temp_digit
+
+def get_outline(digit):
     WHITE = 0
     BLACK = 1
     temp_digit = []
@@ -278,11 +308,88 @@ def get_diagonals(digit):
 	    y+= 1
 	temp_digit.append(temp)
 	x += 1
-    for temp in temp_digit:
-	print temp
+    return (temp_digit, v)
+
+def chunkarray(l, n):
+    n = max(1, n)
+    return [l[i:i + n] for i in range(0, len(l), n)]
+
+def get_chunks_array(ROWS, COLS, digit, ):
+    chunks = []
+    temp_chunks = []
+    for i in range(0, COLS):
+	temp_chunks.append([])
+    for d in digit:
+	for i in range(0, COLS):
+	    if len(temp_chunks[i]) == ROWS:
+		chunks.append(temp_chunks[i])
+		temp_chunks[i] = []
+	strings = chunkarray(d, 30/COLS)
+	#print strings
+	for i in range(0, COLS):
+	    temp_chunks[i].append(strings[i])
+    return chunks
+
+
+def get_hog(vertex):
+    return 0
+
+def get_diagonals(digit):
+    WHITE = 0
+    BLACK = 1
+    temp_digit, v = get_outline(digit)
+    #chunks = get_chunks_array(4, 10, temp_digit)
+    #for chunk in chunks:
+	#for arr in chunk:
+	    #print arr
+	#print "\n"
+    hog = {}
+    for i in range(0, len(temp_digit)-1):
+	for j in range(0, len(line)-1):
+	    if i == 0:
+		if j == 0:
+		    stack.append(temp_digit[i][j+1])
+		    stack.append(temp_digit[i+1][j])
+		elif j == len(temp_digit[0])-1:
+		    stack.append(temp_digit[i][j-1])
+		    stack.append(temp_digit[i+1][j])
+		else:
+		    #print "%s,%s"%(i, j)
+		    stack.append(temp_digit[i][j-1])
+		    stack.append(temp_digit[i][j+1])
+		    stack.append(temp_digit[i+1][j])
+	    elif i == len(temp_digit)-1:
+		if j == len(temp_digit[0])-1:
+		    stack.append(temp_digit[i][j-1])
+		    stack.append(temp_digit[i-1][j])
+		elif j == 0:
+		    stack.append(temp_digit[i][j+1])
+		    stack.append(temp_digit[i-1][j])
+		else:
+		    stack.append(temp_digit[i][j-1])
+		    stack.append(temp_digit[i][j+1])
+		    stack.append(temp_digit[i-1][j])
+	    elif j == 0:
+		stack.append(temp_digit[i+1][j])
+		stack.append(temp_digit[i-1][j])
+		stack.append(temp_digit[i][j+1])
+	    elif j == len(temp_digit[0])-1:
+		stack.append(temp_digit[i+1][j])
+		stack.append(temp_digit[i-1][j])
+		stack.append(temp_digit[i][j-1])
+	    else:
+		stack.append(temp_digit[i+1][j])
+		stack.append(temp_digit[i-1][j])
+		stack.append(temp_digit[i][j+1])
+		stack.append(temp_digit[i][j-1])
+
+    #for chunk in chunks:
+	#hog.append(get_hog(chunk))
+    #for chunk in chunks:
+	#print chunk
 
     #print "(%s, %s)"%(v.x, v.y)
-    return [v.x, v.y]
+    return hog
 
 
 def get_filled_blocks(block_density):
