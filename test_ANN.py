@@ -2,7 +2,7 @@
 
 #!/usr/bin/python
 
-from Perceptron import Perceptron
+from ANN import ANN
 from array import array
 def main():
 	r1 = [1,6,180,12,1]
@@ -35,7 +35,7 @@ def main():
 	test.append(t1)
 	test.append(t2)
 	
-	p = Perceptron(data,2,test)
+	p = ANN(data,2,test)
 	p.preprocess()
 	p.train_model()
 	p.test_model()

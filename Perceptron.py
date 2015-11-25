@@ -11,7 +11,7 @@ class Perceptron:
 
 	w_vector = []
 	LABEL_W_VECTORS = []
-	ITERATIONS = 100
+	ITERATIONS = 1
 	BIAS = []
 	TARGET_OUTPUT = []
 	feature_v_length = 0
@@ -22,10 +22,12 @@ class Perceptron:
 		for i in range(0,self.feature_v_length):
 			self.w_vector.append(0.0)
 
+		# initialize the weight vectors to 0.0 and the bias to 1.0
+
 		for i in range(0,self.num_of_labels):
 			self.LABEL_W_VECTORS.append(self.w_vector)
 			self.BIAS.append(1.0)
-			self.TARGET_OUTPUT.append(i)
+			self.TARGET_OUTPUT.append(0)
 
 		print self.LABEL_W_VECTORS
 	
@@ -33,61 +35,82 @@ class Perceptron:
 		
 		for i in range(0,self.ITERATIONS):
 			for j in self.training_data:
+				print "TRAINING TUPLE",j
 				INPUT = []
 				for k in range(1,len(j)-1):
 					INPUT.append(j[k])
-
-				WEIGHTED_INPUT = []
-				OUTPUT = []
-				ERROR = []
+				#print "Input vector"
+				#print INPUT
+				#WEIGHTED_INPUT = []
+				#OUTPUT = []
+				#ERROR = []
+				self.TARGET_OUTPUT[j[len(j)-1]] = 1
 				for l in range(0,self.num_of_labels):			
 					weighted_input = self.BIAS[l]
 					for k in range(0,self.feature_v_length):
 						weighted_input += self.LABEL_W_VECTORS[l][k]*INPUT[k]
-					WEIGHTED_INPUT.append(weighted_input)
+					#WEIGHTED_INPUT.append(weighted_input)
 					
-					output = 1.0/(1.0 + numpy.power(2.7,-(WEIGHTED_INPUT[l])))
-					OUTPUT.append(output)
+					#using Sigmoid function as activation function
+					with numpy.errstate(over = 'ignore'):
+						output = 1.0/(1.0 + numpy.power(2.7,-(weighted_input)))
+
 					
-					error = OUTPUT[l]*(1.0 - OUTPUT[l])*(self.TARGET_OUTPUT[l] - OUTPUT[l])
-					ERROR.append(error)
+					#output = weighted_input
+
+					#print "Sigmoid output"
+					#print output
+					
+					error =(self.TARGET_OUTPUT[l] - output)
+					#ERROR.append(error)
 
 					LEARNING_RATE = 1.0/(1.0 + i)
+
+					print "FOR",l
+					print "Before Update"
+					print self.LABEL_W_VECTORS
 					
 					for k in range(0,self.feature_v_length):
-						self.LABEL_W_VECTORS[l][k] = self.LABEL_W_VECTORS[l][k] + LEARNING_RATE*ERROR[l]*OUTPUT[l]
-					self.BIAS[l] = self.BIAS[l] + LEARNING_RATE*ERROR[l]
+						print "l=",l,"k=",k
+						self.LABEL_W_VECTORS[l][k] += LEARNING_RATE*error*INPUT[k] #problem here
+						
+						
 
+
+					print "After Update"
+					print self.LABEL_W_VECTORS
+
+					self.BIAS[l] = self.BIAS[l] + LEARNING_RATE*error
+				self.TARGET_OUTPUT[j[len(j)-1]] = 0
 			print "ITERATION ",i
 			print "**********************"
 			print self.LABEL_W_VECTORS
 			print self.BIAS
 					
 				
-				
-
 					
 				
 		
 			
 		
 	def test_model(self):
-		
-		CLASS_VALUE = []
-		for l in range(0,self.num_of_labels):
-			value = self.BIAS[l]
-			for i in range(1,len(self.test_data)):
-				value = value + self.LABEL_W_VECTORS[l][i-1]*self.test_data[i]
+		for t in self.test_data:
+			CLASS_VALUE = []
+			for l in range(0,self.num_of_labels):
+				value = self.BIAS[l]
+				for i in range(1,len(t)):
+					value = value + self.LABEL_W_VECTORS[l][i-1]*t[i]
 				CLASS_VALUE.append(value)
 
-		max_value = CLASS_VALUE[0]
-		output_class = 0
-		for l in range(0,self.num_of_labels):
-			if CLASS_VALUE[l] > max_value :
-				max_value = CLASS_VALUE[l]
-				output_class = l
+			print CLASS_VALUE
+			max_value = CLASS_VALUE[0]
+			output_class = 0
+			for l in range(0,self.num_of_labels):
+				if CLASS_VALUE[l] > max_value :
+					max_value = CLASS_VALUE[l]
+					output_class = l
 
-		return output_class
+			print output_class
 				
 		
 		
