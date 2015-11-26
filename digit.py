@@ -333,8 +333,11 @@ def get_chunks_array(ROWS, COLS, digit, ):
 
 
 def get_hog(vertex_1,vertex_2 ):
-    return 0
+    if vertex_1.color == 1 and vertex_2.color == 1:
+	return 2
+    return vertex_2.color - vertex_1.color
 
+#hog_features = {}
 def get_diagonals(digit):
     WHITE = 0
     BLACK = 1
@@ -345,6 +348,17 @@ def get_diagonals(digit):
 	    #print arr
 	#print "\n"
     hog = {}
+    possible_values = ['0', '1', '-1', '2']
+    for a in possible_values:
+	for b in possible_values:
+	    for c in possible_values:
+		for d in possible_values:
+		    hog[a+b+c+d] = 0
+		    #for e in possible_values:
+			#for f in possible_values:
+			    #for g in possible_values:
+				#for h in possible_values:
+
     #h1 - Top
     #h2 - TopRight
     #h3 - Right
@@ -353,58 +367,141 @@ def get_diagonals(digit):
     #h6 - BottomLeft
     #h7 - Left
     #h8 - TopLeft
+    #for i in range(0, len(temp_digit)-1):
+	#for j in range(0, len(temp_digit[0])-1):
+	    #if i == 0:
+		#if j == 0:
+		    #h1 = 0
+		    #h2 = 0
+		    #h3 = get_hog(temp_digit[i][j], temp_digit[i][j+1])
+		    #h4 = get_hog(temp_digit[i][j], temp_digit[i+1][j+1])
+		    #h5 = get_hog(temp_digit[i][j], temp_digit[i+1][j])
+		    #h6 = 0
+		    #h7 = 0
+		    #h8 = 0
+		#elif j == len(temp_digit[0])-1:
+		    #h1 = 0
+		    #h2 = 0
+		    #h3 = 0
+		    #h4 = 0
+		    #h5 = get_hog(temp_digit[i][j], temp_digit[i+1][j])
+		    #h6 = get_hog(temp_digit[i][j], temp_digit[i+1][j-1])
+		    #h7 = get_hog(temp_digit[i][j], temp_digit[i][j-1])
+		    #h8 = 0
+		#else:
+		    #h1 = 0
+		    #h2 = 0
+		    #h3 = get_hog(temp_digit[i][j], temp_digit[i][j+1])
+		    #h4 = get_hog(temp_digit[i][j], temp_digit[i+1][j+1])
+		    #h5 = get_hog(temp_digit[i][j], temp_digit[i+1][j])
+		    #h6 = get_hog(temp_digit[i][j], temp_digit[i+1][j-1])
+		    #h7 = get_hog(temp_digit[i][j], temp_digit[i][j-1])
+		    #h8 = 0
+	    #elif i == len(temp_digit)-1:
+		#if j == len(temp_digit[0])-1:
+		    #h1 = get_hog(temp_digit[i][j], temp_digit[i-1][j])
+		    #h2 = 0
+		    #h3 = 0
+		    #h4 = 0
+		    #h5 = 0
+		    #h6 = 0
+		    #h7 = get_hog(temp_digit[i][j], temp_digit[i][j-1])
+		    #h8 = get_hog(temp_digit[i][j], temp_digit[i-1][j-1])
+		#elif j == 0:
+		    #h1 = get_hog(temp_digit[i][j], temp_digit[i-1][j])
+		    #h2 = get_hog(temp_digit[i][j], temp_digit[i-1][j+1])
+		    #h3 = get_hog(temp_digit[i][j], temp_digit[i][j+1])
+		    #h4 = 0
+		    #h5 = 0
+		    #h6 = 0
+		    #h7 = 0
+		    #h8 = 0
+		#else:
+		    #h1 = get_hog(temp_digit[i][j], temp_digit[i-1][j])
+		    #h2 = get_hog(temp_digit[i][j], temp_digit[i-1][j+1])
+		    #h3 = get_hog(temp_digit[i][j], temp_digit[i][j+1])
+		    #h4 = 0
+		    #h5 = 0
+		    #h6 = 0
+		    #h7 = get_hog(temp_digit[i][j], temp_digit[i][j-1])
+		    #h8 = get_hog(temp_digit[i][j], temp_digit[i-1][j-1])
+	    #elif j == 0:
+		#h1 = get_hog(temp_digit[i][j], temp_digit[i-1][j])
+		#h2 = get_hog(temp_digit[i][j], temp_digit[i-1][j+1])
+		#h3 = get_hog(temp_digit[i][j], temp_digit[i][j+1])
+		#h4 = get_hog(temp_digit[i][j], temp_digit[i+1][j+1])
+		#h5 = get_hog(temp_digit[i][j], temp_digit[i+1][j])
+		#h6 = 0
+		#h7 = 0
+		#h8 = 0
+	    #elif j == len(temp_digit[0])-1:
+		#h1 = get_hog(temp_digit[i][j], temp_digit[i-1][j])
+		#h2 = 0
+		#h3 = 0
+		#h4 = 0
+		#h5 = get_hog(temp_digit[i][j], temp_digit[i+1][j])
+		#h6 = get_hog(temp_digit[i][j], temp_digit[i+1][j-1])
+		#h7 = get_hog(temp_digit[i][j], temp_digit[i][j-1])
+		#h8 = get_hog(temp_digit[i][j], temp_digit[i-1][j-1])
+	    #else:
+		#h1 = get_hog(temp_digit[i][j], temp_digit[i-1][j])
+		#h2 = get_hog(temp_digit[i][j], temp_digit[i-1][j+1])
+		#h3 = get_hog(temp_digit[i][j], temp_digit[i][j+1])
+		#h4 = get_hog(temp_digit[i][j], temp_digit[i+1][j+1])
+		#h5 = get_hog(temp_digit[i][j], temp_digit[i+1][j])
+		#h6 = get_hog(temp_digit[i][j], temp_digit[i+1][j-1])
+		#h7 = get_hog(temp_digit[i][j], temp_digit[i][j-1])
+		#h8 = get_hog(temp_digit[i][j], temp_digit[i-1][j-1])
+	    #key = str(h1) + str(h2) + str(h3) + str(h4) + str(h5) + str(h6) + str(h7) + str(h8)
+	    #if key not in hog_features:
+		#hog_features[key] = 0
+	    #if key not in hog:
+		#hog[key] = 1
+	    #else:
+		#hog[key] += 1
+
+    #h1 - Top - Bottom
+    #h2 - Left - Right
+    #h3 - TopLeft - BottomLeft
+    #h4 - TopRight - BottomLeft
     for i in range(0, len(temp_digit)-1):
-	for j in range(0, len(line)-1):
-	    if i == 0:
-		if j == 0:
+	for j in range(0, len(temp_digit[0])-1):
+	    if i == 0 or i == len(temp_digit)-1:
+		if j == 0 or j == len(temp_digit[0])-1:
 		    h1 = 0
 		    h2 = 0
-		    h3 = get_hog(temp_digit[i][j], temp_digit[i][j+1])
-		    h4 = get_hog(temp_digit[i][j], temp_digit[i+1][j+1])
-		    h5 = get_hog(temp_digit[i][j], temp_digit[i+1][j])
-		    h6 = 0
-		    h7 = 0
-		    h8 = 0
-		elif j == len(temp_digit[0])-1:
-		    stack.append(temp_digit[i][j-1])
-		    stack.append(temp_digit[i+1][j])
+		    h3 = 0
+		    h4 = 0
 		else:
-		    #print "%s,%s"%(i, j)
-		    stack.append(temp_digit[i][j-1])
-		    stack.append(temp_digit[i][j+1])
-		    stack.append(temp_digit[i+1][j])
-	    elif i == len(temp_digit)-1:
-		if j == len(temp_digit[0])-1:
-		    stack.append(temp_digit[i][j-1])
-		    stack.append(temp_digit[i-1][j])
-		elif j == 0:
-		    stack.append(temp_digit[i][j+1])
-		    stack.append(temp_digit[i-1][j])
-		else:
-		    stack.append(temp_digit[i][j-1])
-		    stack.append(temp_digit[i][j+1])
-		    stack.append(temp_digit[i-1][j])
-	    elif j == 0:
-		stack.append(temp_digit[i+1][j])
-		stack.append(temp_digit[i-1][j])
-		stack.append(temp_digit[i][j+1])
-	    elif j == len(temp_digit[0])-1:
-		stack.append(temp_digit[i+1][j])
-		stack.append(temp_digit[i-1][j])
-		stack.append(temp_digit[i][j-1])
+		    h1 = 0
+		    h2 = get_hog(temp_digit[i][j-1], temp_digit[i][j+1])
+		    h3 = 0
+		    h4 = 0
+	    elif j == 0 or j == len(temp_digit[0])-1:
+		h1 = get_hog(temp_digit[i-1][j], temp_digit[i+1][j])
+		h2 = 0
+		h3 = 0
+		h4 = 0
 	    else:
-		stack.append(temp_digit[i+1][j])
-		stack.append(temp_digit[i-1][j])
-		stack.append(temp_digit[i][j+1])
-		stack.append(temp_digit[i][j-1])
-
+		h1 = get_hog(temp_digit[i-1][j], temp_digit[i+1][j])
+		h2 = get_hog(temp_digit[i][j-1], temp_digit[i][j+1])
+		h3 = get_hog(temp_digit[i-1][j-1], temp_digit[i+1][j+1])
+		h4 = get_hog(temp_digit[i+1][j+1], temp_digit[i-1][j-1])
+	    key = str(h1) + str(h2) + str(h3) + str(h4)
+	    if key not in hog:
+		hog[key] = 1
+	    else:
+		hog[key] += 1
+    for k,v in sorted(hog.items(), key=operator.itemgetter(1), reverse=True):
+	print "%s, %s"%(k, v)
+	#print len(hog)
     #for chunk in chunks:
 	#hog.append(get_hog(chunk))
     #for chunk in chunks:
 	#print chunk
 
     #print "(%s, %s)"%(v.x, v.y)
-    return hog
+    return hog.values()
 
 
 def get_filled_blocks(block_density):
@@ -420,9 +517,10 @@ def extract_features(digit):
    feature_1 = get_loops_horizontal(digit)
    feature_2 = get_block_density(digit)
    feature_3 = get_filled_blocks(feature_2)
+   #feature_3 = []
    feature_4 = get_loops(digit)
-   feature_5 = []
-   #feature_5 = get_diagonals(digit)
+   feature_5 = get_diagonals(digit)
+   #feature_5 = []
    return feature_1 + feature_2 + feature_3 + feature_4 + feature_5
    #return feature_4
 
