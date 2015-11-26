@@ -5,6 +5,7 @@ import math
 
 class Naive_Bayes:
 
+    DEBUG = False
     prior_prob = []
     posterior_prob = []
     conditional_prob = []
@@ -30,8 +31,8 @@ class Naive_Bayes:
 	label = []
 	values = []
 
-	print feature_count
-	print self.label_count
+	if self.DEBUG: print feature_count
+	if self.DEBUG: print self.label_count
 
 	for j in range(0,feature_count):
 	    label = []
@@ -39,12 +40,12 @@ class Naive_Bayes:
 		label.append(values)
 	    features.append(label)
 
-	print features
+	if self.DEBUG: print features
 
-	#print feature_count+1
+	#if self.DEBUG: print feature_count+1
 
 	for i in self.training_data:
-	    #print len(i)
+	    #if self.DEBUG: print len(i)
 	    self.label_count[i[len(i)-1]] += 1
 	    self.total_count += 1
 	    for k in range(0,self.num_of_labels):
@@ -55,10 +56,10 @@ class Naive_Bayes:
 			features[j][k].append(i[j+1])
 
 
-	print self.label_count
-	print "***********************"
-	print features
-	print "***********"
+	if self.DEBUG: print self.label_count
+	if self.DEBUG: print "***********************"
+	if self.DEBUG: print features
+	if self.DEBUG: print "***********"
 
 	cols_mean = []
 	#mean = []
@@ -74,16 +75,16 @@ class Naive_Bayes:
 	    self.mean.append(cols_mean)
 	    self.sd.append(cols_sd)
 
-	print self.mean
-	print self.sd
+	if self.DEBUG: print self.mean
+	if self.DEBUG: print self.sd
 
     def train_model(self):
 
 	for i in range(0,len(self.label_count)):
 	    self.prior_prob.append(self.label_count[i]/float(self.total_count))
-	print "****prior probabilities******"
+	if self.DEBUG: print "****prior probabilities******"
 
-	print self.prior_prob
+	if self.DEBUG: print self.prior_prob
 
     def normal_dist(self,i,j,data):
 
@@ -96,15 +97,15 @@ class Naive_Bayes:
 		for i in range(0,self.num_of_labels):
 			joint_prob = 1
 			for j in range(1,len(t)):
-				#print "normal_dist"
+				#if self.DEBUG: print "normal_dist"
 				if math.isnan(self.normal_dist(i,j,t[j])):
 				    joint_prob = joint_prob*1
 				else:
 				    joint_prob = joint_prob*self.normal_dist(i,j,t[j])
 			self.posterior_prob.append(self.prior_prob[i]*joint_prob)
 
-		#print "self.posterior_prob"
-		#print self.posterior_prob
+		#if self.DEBUG: print "self.posterior_prob"
+		#if self.DEBUG: print self.posterior_prob
 		max_posterior_prob = self.posterior_prob[0]
 		output_class = 0
 		for i in range(0,self.num_of_labels):

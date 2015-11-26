@@ -1,4 +1,5 @@
 from Naive_Bayes import Naive_Bayes
+from Perceptron import Perceptron
 import operator
 
 DIRECTORY = "digitdata"
@@ -331,7 +332,7 @@ def get_chunks_array(ROWS, COLS, digit, ):
     return chunks
 
 
-def get_hog(vertex):
+def get_hog(vertex_1,vertex_2 ):
     return 0
 
 def get_diagonals(digit):
@@ -344,12 +345,26 @@ def get_diagonals(digit):
 	    #print arr
 	#print "\n"
     hog = {}
+    #h1 - Top
+    #h2 - TopRight
+    #h3 - Right
+    #h4 - BottomRight
+    #h5 - Bottom
+    #h6 - BottomLeft
+    #h7 - Left
+    #h8 - TopLeft
     for i in range(0, len(temp_digit)-1):
 	for j in range(0, len(line)-1):
 	    if i == 0:
 		if j == 0:
-		    stack.append(temp_digit[i][j+1])
-		    stack.append(temp_digit[i+1][j])
+		    h1 = 0
+		    h2 = 0
+		    h3 = get_hog(temp_digit[i][j], temp_digit[i][j+1])
+		    h4 = get_hog(temp_digit[i][j], temp_digit[i+1][j+1])
+		    h5 = get_hog(temp_digit[i][j], temp_digit[i+1][j])
+		    h6 = 0
+		    h7 = 0
+		    h8 = 0
 		elif j == len(temp_digit[0])-1:
 		    stack.append(temp_digit[i][j-1])
 		    stack.append(temp_digit[i+1][j])
@@ -406,7 +421,8 @@ def extract_features(digit):
    feature_2 = get_block_density(digit)
    feature_3 = get_filled_blocks(feature_2)
    feature_4 = get_loops(digit)
-   feature_5 = get_diagonals(digit)
+   feature_5 = []
+   #feature_5 = get_diagonals(digit)
    return feature_1 + feature_2 + feature_3 + feature_4 + feature_5
    #return feature_4
 
@@ -450,6 +466,20 @@ def main():
     nb.preprocess()
     nb.train_model()
     testpredictions = nb.test_model()
+    correct = 0
+    incorrect = 0
+    for prediction, label in zip(testpredictions, digittestlabels):
+	if prediction == label:
+	    correct += 1
+	else:
+	    incorrect +=1
+	print "%s\t%s"%(prediction, label)
+    print "Final: %s"%(float(correct)/(correct + incorrect))
+
+    p = Perceptron(train_matrix, 10,test_matrix )
+    p.preprocess()
+    p.train_model()
+    testpredictions = p.test_model()
     correct = 0
     incorrect = 0
     for prediction, label in zip(testpredictions, digittestlabels):
