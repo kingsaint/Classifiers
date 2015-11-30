@@ -2,14 +2,15 @@ from Naive_Bayes import Naive_Bayes
 from Perceptron import Perceptron
 import operator
 
-DIRECTORY = "digitdata"
-DIGIT_LENGTH = 28
+DIRECTORY = "facedata"
+DIGIT_LENGTH = 70
+DIGIT_WIDTH = 60
 digitdata = []
 digitlabels = []
 digittestdata = []
 digittestlabels = []
 def parse_training_data():
-    with open(DIRECTORY + "/trainingimages", "rb") as f:
+    with open(DIRECTORY + "/facedatatrain", "rb") as f:
 	temp = []
 	counter = 1
 	for line in f:
@@ -18,14 +19,14 @@ def parse_training_data():
 		temp = []
 		counter = 1
 	    else:
-		temp.append(line.replace("\n", "").ljust(30, " "))
+		temp.append(line.replace("\n", "").ljust(DIGIT_WIDTH, " "))
 		counter += 1
-    with open(DIRECTORY + "/traininglabels", "rb") as f:
+    with open(DIRECTORY + "/facedatatrainlabels", "rb") as f:
 	for line in f:
 	    digitlabels.append(int(line))
 
 def parse_testing_data():
-    with open(DIRECTORY + "/testimages", "rb") as f:
+    with open(DIRECTORY + "/facedatatest", "rb") as f:
 	temp = []
 	counter = 1
 	for line in f:
@@ -34,9 +35,9 @@ def parse_testing_data():
 		temp = []
 		counter = 1
 	    else:
-		temp.append(line.replace("\n", "").ljust(30, " "))
+		temp.append(line.replace("\n", "").ljust(DIGIT_WIDTH, " "))
 		counter += 1
-    with open(DIRECTORY + "/testlabels", "rb") as f:
+    with open(DIRECTORY + "/facedatatestlabels", "rb") as f:
 	for line in f:
 	    digittestlabels.append(int(line))
 
@@ -631,7 +632,7 @@ def main():
     #for test in test_matrix:
 	#print len(test)
 
-    nb = Naive_Bayes(train_matrix, 2,test_matrix )
+    nb = Naive_Bayes(train_matrix, 10,test_matrix )
     nb.preprocess()
     nb.train_model()
     testpredictions = nb.test_model()
@@ -645,7 +646,7 @@ def main():
 	print "%s\t%s"%(prediction, label)
     print "Final: %s"%(float(correct)/(correct + incorrect))
 
-    p = Perceptron(train_matrix, 2,test_matrix )
+    p = Perceptron(train_matrix, 10,test_matrix )
     p.preprocess()
     p.train_model()
     testpredictions = p.test_model()
