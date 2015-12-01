@@ -11,7 +11,7 @@ class Perceptron:
 
 	DEBUG = False
 	LABEL_W_VECTORS = []
-	ITERATIONS = 10
+	ITERATIONS = 100
 	BIAS = []
 	TARGET_OUTPUT = []
 	feature_v_length = 0

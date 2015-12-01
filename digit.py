@@ -631,7 +631,7 @@ def main():
     #for test in test_matrix:
 	#print len(test)
 
-    nb = Naive_Bayes(train_matrix, 2,test_matrix )
+    nb = Naive_Bayes(train_matrix, 10,test_matrix )
     nb.preprocess()
     nb.train_model()
     testpredictions = nb.test_model()
@@ -645,7 +645,7 @@ def main():
 	print "%s\t%s"%(prediction, label)
     print "Final: %s"%(float(correct)/(correct + incorrect))
 
-    p = Perceptron(train_matrix, 2,test_matrix )
+    p = Perceptron(train_matrix, 10,test_matrix )
     p.preprocess()
     p.train_model()
     testpredictions = p.test_model()
