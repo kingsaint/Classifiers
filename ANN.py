@@ -9,7 +9,7 @@ class ANN:
 		self.test_data = test_data
 		self.num_of_labels = num_of_labels
 
-	w_vector = []
+	
 	OUTPUT_LAYER_W_VECTORS = []
 	HIDDEN_LAYER_W_VECTORS = []
 	ITERATIONS = 1
@@ -25,21 +25,24 @@ class ANN:
 		# initialize the weight vectors and bias for hidden layer nodes
 	
 		self.feature_v_length = len(self.training_data[0])-2
-		for i in range(0,self.feature_v_length):
-			self.w_vector.append(0.0)
-
 		for i in range(0,self.HIDDEN_NODES):
-			self.HIDDEN_LAYER_W_VECTORS.append(self.w_vector)
+			w_vector = []
+			for j in range(0,self.feature_v_length):
+				w_vector.append(0.0)
+
+		
+			self.HIDDEN_LAYER_W_VECTORS.append(w_vector)
 			self.HIDDEN_LAYER_BIAS.append(1.0)
-			self.HIDDEN_LAYER_OUTPUT.append(0.0)
+			#self.HIDDEN_LAYER_OUTPUT.append(0.0)
 		
 		#initialize the wight vectors and bias for output layer nodes
-		
-		for i in range(0,self.HIDDEN_NODES):
-			self.w_vector.append(0.0)
-
 		for i in range(0,self.num_of_labels):
-			self.OUTPUT_LAYER_W_VECTORS.append(self.w_vector)
+			w_vector = []
+			for j in range(0,self.HIDDEN_NODES):
+				w_vector.append(1.0)
+
+		
+			self.OUTPUT_LAYER_W_VECTORS.append(w_vector)
 			self.OUTPUT_LAYER_BIAS.append(1.0)
 			self.TARGET_OUTPUT.append(0.0)
 
@@ -59,7 +62,7 @@ class ANN:
 				# Hidden layer					
 				
 
-				OUTPUT_LAYER_INPUT = [] # this is the output of the hidden layter and input of the output layer
+				OUTPUT_LAYER_INPUT = [] # this is the output of the hidden layer and input of the output layer
 				for h in range(0,self.HIDDEN_NODES):
 			
 					weighted_input = self.HIDDEN_LAYER_BIAS[h]
@@ -71,6 +74,12 @@ class ANN:
 						output = 1.0/(1.0 + numpy.power(2.7,-(weighted_input)))
 
 					OUTPUT_LAYER_INPUT.append(output)
+
+
+
+
+				print "OUTPUT LAYER INPUT"
+				print OUTPUT_LAYER_INPUT
 
 				# Output layer				
 
@@ -86,6 +95,9 @@ class ANN:
 						output = 1.0/(1.0 + numpy.power(2.7,-(weighted_input)))
 
 					OUTPUT.append(output)
+
+				print "OUTPUT LAYER OUTPUT"
+				print OUTPUT
 
 				# ***********  Backpropagate the errors ***********#
 
@@ -111,23 +123,36 @@ class ANN:
 					HIDDEN_LAYER_ERROR.append(error)			
 
 				# Update the weights  and bias of the output layer
-				
-				for l in range(0,self.num_of_labels):	
+				print "Update the weights  and bias of the output layer"
+				print "************************************************"
+				for l in range(0,self.num_of_labels):
+					print "LABEL =",l
+					print "Before Update:"
+					print self.OUTPUT_LAYER_W_VECTORS
 					for h in range(0,self.HIDDEN_NODES):
 						self.OUTPUT_LAYER_W_VECTORS[l][h] += LEARNING_RATE*OUTPUT_LAYER_ERROR[l]*OUTPUT_LAYER_INPUT[h] #problem here
 					self.OUTPUT_LAYER_BIAS[l] += LEARNING_RATE*OUTPUT_LAYER_ERROR[l]	
-						
+					print "After Update:"
+					print self.OUTPUT_LAYER_W_VECTORS	
 
 
 				# Update the weights and bias of the hidden layer
 
+				print "Update theweights and bias of the hidden layer"
+				print "**********************************************"
+
 				for h in range(0,self.HIDDEN_NODES):
+					print "LABEL =",l
+					print "Before Update:"
+					print self.HIDDEN_LAYER_W_VECTORS
 					for k in range(0,self.feature_v_length):
 						self.HIDDEN_LAYER_W_VECTORS[h][k] += LEARNING_RATE*HIDDEN_LAYER_ERROR[h]*HIDDEN_LAYER_INPUT[k]
 					self.HIDDEN_LAYER_BIAS[h] += LEARNING_RATE*HIDDEN_LAYER_ERROR[h]
+					print "After Update:"
+					print self.HIDDEN_LAYER_W_VECTORS
 
 					
-				self.TARGET_OUTPUT[j[len(j)-1]] = 0
+				
 			print "ITERATION ",i
 			print "**************"
 			print "Hidden Layer weights and bias"
