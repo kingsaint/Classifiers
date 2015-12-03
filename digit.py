@@ -759,10 +759,10 @@ def main():
 	#for test in test_matrix:
 	    #print len(test)
 
-	ann = ANN(train_matrix, 10,test_matrix )
-	ann.preprocess()
-	ann.train_model()
-	testpredictions = ann.test_model()
+	p = ANN(train_matrix,10,test_matrix)
+	p.preprocess()
+	p.train_model()
+	testpredictions = p.test_model()
 	correct = 0
 	incorrect = 0
 	for prediction, label in zip(testpredictions, digittestlabels):

@@ -173,52 +173,54 @@ class ANN:
 
 
 	def test_model(self):
-		for t in self.test_data:
+	    output = []
+	    for t in self.test_data:
 
-			HIDDEN_LAYER_INPUT = []
-			for k in range(1,len(t)):
-				HIDDEN_LAYER_INPUT.append(t[k])
+		    HIDDEN_LAYER_INPUT = []
+		    for k in range(1,len(t)):
+			    HIDDEN_LAYER_INPUT.append(t[k])
 
-				# Hidden layer
+			    # Hidden layer
 
 
-			OUTPUT_LAYER_INPUT = [] # this is the output of the hidden layter and input of the output layer
-			for h in range(0,self.HIDDEN_NODES):
+		    OUTPUT_LAYER_INPUT = [] # this is the output of the hidden layter and input of the output layer
+		    for h in range(0,self.HIDDEN_NODES):
 
-				weighted_input = self.HIDDEN_LAYER_BIAS[h]
-				for k in range(1,len(t)):
-					weighted_input += self.HIDDEN_LAYER_W_VECTORS[h][k-1]*HIDDEN_LAYER_INPUT[k-1]
+			    weighted_input = self.HIDDEN_LAYER_BIAS[h]
+			    for k in range(1,len(t)):
+				    weighted_input += self.HIDDEN_LAYER_W_VECTORS[h][k-1]*HIDDEN_LAYER_INPUT[k-1]
 
-					#using Sigmoid function as activation function for hidden layer nodes
-				with numpy.errstate(over = 'ignore'):
-					output = 1.0/(1.0 + numpy.power(2.7,-(weighted_input)))
+				    #using Sigmoid function as activation function for hidden layer nodes
+			    with numpy.errstate(over = 'ignore'):
+				    output = 1.0/(1.0 + numpy.power(2.7,-(weighted_input)))
 
-				OUTPUT_LAYER_INPUT.append(output)
+			    OUTPUT_LAYER_INPUT.append(output)
 
-				# Output layer
+			    # Output layer
 
-			OUTPUT = []
-			for l in range(0,self.num_of_labels):
+		    OUTPUT = []
+		    for l in range(0,self.num_of_labels):
 
-				weighted_input = self.OUTPUT_LAYER_BIAS[l]
-				for k in range(0,self.HIDDEN_NODES):
-					weighted_input += self.OUTPUT_LAYER_W_VECTORS[l][k]*OUTPUT_LAYER_INPUT[k]
+			    weighted_input = self.OUTPUT_LAYER_BIAS[l]
+			    for k in range(0,self.HIDDEN_NODES):
+				    weighted_input += self.OUTPUT_LAYER_W_VECTORS[l][k]*OUTPUT_LAYER_INPUT[k]
 
-					#using Sigmoid function as activation function for output layer nodes
-				with numpy.errstate(over = 'ignore'):
-					output = 1.0/(1.0 + numpy.power(2.7,-(weighted_input)))
+				    #using Sigmoid function as activation function for output layer nodes
+			    with numpy.errstate(over = 'ignore'):
+				    output = 1.0/(1.0 + numpy.power(2.7,-(weighted_input)))
 
-				OUTPUT.append(output)
+			    OUTPUT.append(output)
 
-			print OUTPUT
-			max_value = OUTPUT[0]
-			output_class = 0
-			for l in range(0,self.num_of_labels):
-				if OUTPUT[l] > max_value :
-					max_value = OUTPUT[l]
-					output_class = l
+		    print OUTPUT
+		    max_value = OUTPUT[0]
+		    output_class = 0
+		    for l in range(0,self.num_of_labels):
+			    if OUTPUT[l] > max_value :
+				    max_value = OUTPUT[l]
+				    output_class = l
 
-			print output_class
+		    output.append(output_class)
+	    return output
 
 
 
