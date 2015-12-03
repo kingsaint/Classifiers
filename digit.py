@@ -4,6 +4,10 @@ import operator
 
 DIRECTORY = "digitdata"
 DIGIT_LENGTH = 28
+MODE = -1
+PERCEPTRON = 0
+NAIVE_BAYES = 1
+ANN = 2
 digitdata = []
 digitlabels = []
 digittestdata = []
@@ -538,6 +542,7 @@ def get_diagonals(digit):
     return hog.values()
 
 
+
 def get_filled_blocks(block_density):
     filled = []
     for b in block_density:
@@ -547,6 +552,16 @@ def get_filled_blocks(block_density):
 	    filled.append(0)
     return filled
 
+def get_pixels(digit):
+    pixels = []
+    for line in digit:
+	for d in line:
+	    if d == ' ':
+		pixels.append(0)
+	    else:
+		pixels.append(1)
+    return pixels
+
 def extract_features(digit):
    feature_1 = get_loops_horizontal(digit)
    feature_2 = get_block_density(digit)
@@ -554,8 +569,9 @@ def extract_features(digit):
    #feature_3 = []
    feature_4 = get_loops(digit)
    feature_5 = get_diagonals(digit)
+   #feature_6 = get_pixels(digit)
    #feature_5 = []
-   return feature_1 + feature_2 + feature_3 + feature_4 + feature_5
+   return feature_1 + feature_2 + feature_3 + feature_4 + feature_5 + feature_6
    #return feature_5
 
 reduce_features = []
@@ -595,69 +611,167 @@ def reduce_matrix_test(matrix):
 
 def main():
     parse_training_data()
-    train_matrix = []
-    i = 0
-    for d,l in zip(digitdata, digitlabels):
-	print "^"*50
-	print "\n".join(d)
-	print l
-	print "$"*50
-	features = extract_features(d)
-	train_matrix.append([i] + features + [l])
-	i+=1
-    train_matrix = reduce_matrix_train(train_matrix)
-    #print "train_matrix"
-    #for train in train_matrix:
-	#print len(train)
-    #print train_matrix
-    parse_testing_data()
+    MODE = ANN
+    if MODE == PERCEPTRON:
+	train_matrix = []
+	i = 0
+	for d,l in zip(digitdata, digitlabels):
+	    print "^"*50
+	    print "\n".join(d)
+	    print l
+	    print "$"*50
+	    features = extract_features(d)
+	    train_matrix.append([i] + features + [l])
+	    i+=1
+	train_matrix = reduce_matrix_train(train_matrix)
+	#print "train_matrix"
+	#for train in train_matrix:
+	    #print len(train)
+	#print train_matrix
+	parse_testing_data()
 
-    test_matrix = []
-    i = 0
-    #print '\n'.join(digittestdata[0])
-    for d in digittestdata:
-	#print "^"*50
-	#print "\n".join(d)
-	#print l
-	#print "$"*50
-	features = extract_features(d)
-	test_matrix.append([i] + features)
-	i+= 1
+	test_matrix = []
+	i = 0
+	#print '\n'.join(digittestdata[0])
+	for d in digittestdata:
+	    #print "^"*50
+	    #print "\n".join(d)
+	    #print l
+	    #print "$"*50
+	    features = extract_features(d)
+	    test_matrix.append([i] + features)
+	    i+= 1
 
-    test_matrix = reduce_matrix_test(test_matrix)
+	test_matrix = reduce_matrix_test(test_matrix)
 
-    #print "test_matrix"
-    #print test_matrix
-    #for test in test_matrix:
-	#print len(test)
+	#print "test_matrix"
+	#print test_matrix
+	#for test in test_matrix:
+	    #print len(test)
 
-    nb = Naive_Bayes(train_matrix, 10,test_matrix )
-    nb.preprocess()
-    nb.train_model()
-    testpredictions = nb.test_model()
-    correct = 0
-    incorrect = 0
-    for prediction, label in zip(testpredictions, digittestlabels):
-	if prediction == label:
-	    correct += 1
-	else:
-	    incorrect +=1
-	print "%s\t%s"%(prediction, label)
-    print "Final: %s"%(float(correct)/(correct + incorrect))
+	p = Perceptron(train_matrix, 10,test_matrix )
+	p.preprocess()
+	p.train_model()
+	testpredictions = p.test_model()
+	correct = 0
+	incorrect = 0
+	for prediction, label in zip(testpredictions, digittestlabels):
+	    if prediction == label:
+		correct += 1
+	    else:
+		incorrect +=1
+	    print "%s\t%s"%(prediction, label)
+	print "Final: %s"%(float(correct)/(correct + incorrect))
+    elif MODE == NAIVE_BAYES:
+	train_matrix = []
+	i = 0
+	for d,l in zip(digitdata, digitlabels):
+	    print "^"*50
+	    print "\n".join(d)
+	    print l
+	    print "$"*50
+	    features = extract_features(d)
+	    train_matrix.append([i] + features + [l])
+	    i+=1
+	train_matrix = reduce_matrix_train(train_matrix)
+ #      # train_matrix = []
+	##classes = {}
+	##for i in range(0, 9):
+	    ##classes[i] = []
+	##for d,l in zip(digitdata, digitlabels):
+	    ##print "^"*50
+	    ##print "\n".join(d)
+	    ##print l
+	    ##print "$"*50
+	    ##classes[i].append(d)
+	##for c in classes:
+	    ##features = extract_features_naive(c)
+	    ##train_matrix.append([i] + features + [l])
+ #      #     train_matrix = reduce_matrix_train(train_matrix)
+	#print "train_matrix"
+	#for train in train_matrix:
+	    #print len(train)
+	#print train_matrix
+	parse_testing_data()
 
-    p = Perceptron(train_matrix, 10,test_matrix )
-    p.preprocess()
-    p.train_model()
-    testpredictions = p.test_model()
-    correct = 0
-    incorrect = 0
-    for prediction, label in zip(testpredictions, digittestlabels):
-	if prediction == label:
-	    correct += 1
-	else:
-	    incorrect +=1
-	print "%s\t%s"%(prediction, label)
-    print "Final: %s"%(float(correct)/(correct + incorrect))
+	test_matrix = []
+	i = 0
+	#print '\n'.join(digittestdata[0])
+	for d in digittestdata:
+	    #print "^"*50
+	    #print "\n".join(d)
+	    #print l
+	    #print "$"*50
+	    features = extract_features(d)
+	    test_matrix.append([i] + features)
+	    i+= 1
+
+	test_matrix = reduce_matrix_test(test_matrix)
+	nb = Naive_Bayes(train_matrix, 10,test_matrix )
+	nb.preprocess()
+	nb.train_model()
+	testpredictions = nb.test_model()
+	correct = 0
+	incorrect = 0
+	for prediction, label in zip(testpredictions, digittestlabels):
+	    if prediction == label:
+		correct += 1
+	    else:
+		incorrect +=1
+	    print "%s\t%s"%(prediction, label)
+	print "Final: %s"%(float(correct)/(correct + incorrect))
+
+    elif MODE==ANN:
+	train_matrix = []
+	i = 0
+	for d,l in zip(digitdata, digitlabels):
+	    print "^"*50
+	    print "\n".join(d)
+	    print l
+	    print "$"*50
+	    features = extract_features(d)
+	    train_matrix.append([i] + features + [l])
+	    i+=1
+	train_matrix = reduce_matrix_train(train_matrix)
+	#print "train_matrix"
+	#for train in train_matrix:
+	    #print len(train)
+	#print train_matrix
+	parse_testing_data()
+
+	test_matrix = []
+	i = 0
+	#print '\n'.join(digittestdata[0])
+	for d in digittestdata:
+	    #print "^"*50
+	    #print "\n".join(d)
+	    #print l
+	    #print "$"*50
+	    features = extract_features(d)
+	    test_matrix.append([i] + features)
+	    i+= 1
+
+	test_matrix = reduce_matrix_test(test_matrix)
+
+	#print "test_matrix"
+	#print test_matrix
+	#for test in test_matrix:
+	    #print len(test)
+
+	ann = ANN(train_matrix, 10,test_matrix )
+	ann.preprocess()
+	ann.train_model()
+	testpredictions = ann.test_model()
+	correct = 0
+	incorrect = 0
+	for prediction, label in zip(testpredictions, digittestlabels):
+	    if prediction == label:
+		correct += 1
+	    else:
+		incorrect +=1
+	    print "%s\t%s"%(prediction, label)
+	print "Final: %s"%(float(correct)/(correct + incorrect))
+
 
 
 main()
