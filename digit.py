@@ -8,7 +8,7 @@ DIGIT_LENGTH = 28
 MODE = -1
 PERCEPTRON = 0
 NAIVE_BAYES = 1
-ANN = 2
+NN = 2
 digitdata = []
 digitlabels = []
 digittestdata = []
@@ -612,7 +612,7 @@ def reduce_matrix_test(matrix):
 
 def main():
     parse_training_data()
-    MODE = ANN
+    MODE = NN
     if MODE == PERCEPTRON:
 	train_matrix = []
 	i = 0
@@ -722,7 +722,7 @@ def main():
 	    print "%s\t%s"%(prediction, label)
 	print "Final: %s"%(float(correct)/(correct + incorrect))
 
-    elif MODE==ANN:
+    elif MODE==NN:
 	train_matrix = []
 	i = 0
 	for d,l in zip(digitdata, digitlabels):

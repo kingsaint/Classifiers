@@ -11,13 +11,14 @@ class ANN:
 
 	OUTPUT_LAYER_W_VECTORS = []
 	HIDDEN_LAYER_W_VECTORS = []
-	ITERATIONS = 1
+	ITERATIONS = 10
 	HIDDEN_NODES = 2
 	OUTPUT_LAYER_BIAS = []
 	HIDDEN_LAYER_BIAS = []
 	TARGET_OUTPUT = []
 	HIDDEN_LAYER_OUTPUT = []
 	feature_v_length = 0
+	DEBUG = False
 
 	def preprocess(self):
 
@@ -79,8 +80,8 @@ class ANN:
 
 
 
-				print "OUTPUT LAYER INPUT"
-				print OUTPUT_LAYER_INPUT
+				if self.DEBUG: print "OUTPUT LAYER INPUT"
+				if self.DEBUG: print OUTPUT_LAYER_INPUT
 
 				# Output layer
 
@@ -97,8 +98,8 @@ class ANN:
 
 					OUTPUT.append(output)
 
-				print "OUTPUT LAYER OUTPUT"
-				print OUTPUT
+				if self.DEBUG: print "OUTPUT LAYER OUTPUT"
+				if self.DEBUG: print OUTPUT
 
 				# ***********  Backpropagate the errors ***********#
 
@@ -124,47 +125,47 @@ class ANN:
 					HIDDEN_LAYER_ERROR.append(error)
 
 				# Update the weights  and bias of the output layer
-				print "Update the weights  and bias of the output layer"
-				print "************************************************"
+				if self.DEBUG: print "Update the weights  and bias of the output layer"
+				if self.DEBUG: print "************************************************"
 				for l in range(0,self.num_of_labels):
-					print "LABEL =",l
-					print "Before Update:"
-					print self.OUTPUT_LAYER_W_VECTORS
+					if self.DEBUG: print "LABEL =",l
+					if self.DEBUG: print "Before Update:"
+					if self.DEBUG: print self.OUTPUT_LAYER_W_VECTORS
 					for h in range(0,self.HIDDEN_NODES):
 						self.OUTPUT_LAYER_W_VECTORS[l][h] += LEARNING_RATE*OUTPUT_LAYER_ERROR[l]*OUTPUT_LAYER_INPUT[h] #problem here
 					self.OUTPUT_LAYER_BIAS[l] += LEARNING_RATE*OUTPUT_LAYER_ERROR[l]
-					print "After Update:"
-					print self.OUTPUT_LAYER_W_VECTORS
+					if self.DEBUG: print "After Update:"
+					if self.DEBUG: print self.OUTPUT_LAYER_W_VECTORS
 
 
 
 				# Update the weights and bias of the hidden layer
 
-				print "Update theweights and bias of the hidden layer"
-				print "**********************************************"
+				if self.DEBUG: print "Update theweights and bias of the hidden layer"
+				if self.DEBUG: print "**********************************************"
 
 				for h in range(0,self.HIDDEN_NODES):
-					print "LABEL =",l
-					print "Before Update:"
-					print self.HIDDEN_LAYER_W_VECTORS
+					if self.DEBUG: print "LABEL =",l
+					if self.DEBUG: print "Before Update:"
+					if self.DEBUG: print self.HIDDEN_LAYER_W_VECTORS
 					for k in range(0,self.feature_v_length):
 						self.HIDDEN_LAYER_W_VECTORS[h][k] += LEARNING_RATE*HIDDEN_LAYER_ERROR[h]*HIDDEN_LAYER_INPUT[k]
 					self.HIDDEN_LAYER_BIAS[h] += LEARNING_RATE*HIDDEN_LAYER_ERROR[h]
-					print "After Update:"
-					print self.HIDDEN_LAYER_W_VECTORS
+					if self.DEBUG: print "After Update:"
+					if self.DEBUG: print self.HIDDEN_LAYER_W_VECTORS
 
 
 
-			print "ITERATION ",i
-			print "**************"
-			print "Hidden Layer weights and bias"
-			print "*****************************"
-			print self.HIDDEN_LAYER_W_VECTORS
-			print self.HIDDEN_LAYER_BIAS
-			print "Output Layer weights and bias"
-			print "***************************"
-			print self.OUTPUT_LAYER_W_VECTORS
-			print self.OUTPUT_LAYER_BIAS
+			if self.DEBUG: print "ITERATION ",i
+			if self.DEBUG: print "**************"
+			if self.DEBUG: print "Hidden Layer weights and bias"
+			if self.DEBUG: print "*****************************"
+			if self.DEBUG: print self.HIDDEN_LAYER_W_VECTORS
+			if self.DEBUG: print self.HIDDEN_LAYER_BIAS
+			if self.DEBUG: print "Output Layer weights and bias"
+			if self.DEBUG: print "***************************"
+			if self.DEBUG: print self.OUTPUT_LAYER_W_VECTORS
+			if self.DEBUG: print self.OUTPUT_LAYER_BIAS
 
 
 
@@ -173,7 +174,7 @@ class ANN:
 
 
 	def test_model(self):
-	    output = []
+	    output_array = []
 	    for t in self.test_data:
 
 		    HIDDEN_LAYER_INPUT = []
@@ -211,7 +212,7 @@ class ANN:
 
 			    OUTPUT.append(output)
 
-		    print OUTPUT
+		    if self.DEBUG: print OUTPUT
 		    max_value = OUTPUT[0]
 		    output_class = 0
 		    for l in range(0,self.num_of_labels):
@@ -219,8 +220,8 @@ class ANN:
 				    max_value = OUTPUT[l]
 				    output_class = l
 
-		    output.append(output_class)
-	    return output
+		    output_array.append(output_class)
+	    return output_array
 
 
 
