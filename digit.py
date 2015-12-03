@@ -1,5 +1,6 @@
 from Naive_Bayes import Naive_Bayes
 from Perceptron import Perceptron
+from ANN import ANN
 import operator
 
 DIRECTORY = "digitdata"
@@ -571,7 +572,7 @@ def extract_features(digit):
    feature_5 = get_diagonals(digit)
    #feature_6 = get_pixels(digit)
    #feature_5 = []
-   return feature_1 + feature_2 + feature_3 + feature_4 + feature_5 + feature_6
+   return feature_1 + feature_2 + feature_3 + feature_4 + feature_5
    #return feature_5
 
 reduce_features = []
