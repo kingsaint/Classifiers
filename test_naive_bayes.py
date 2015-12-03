@@ -38,8 +38,8 @@ def main():
 	nb = Naive_Bayes(data,2,test)
 	nb.preprocess()
 	nb.train_model()
-	nb.test_model()
-
+	predictions = nb.test_model()
+	print predictions
 
 main()
 

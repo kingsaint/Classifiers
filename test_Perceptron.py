@@ -24,25 +24,15 @@ def main():
 	#data.append(r7)
 	#data.append(r8)
 
-	
+
 
 	print data
 
-<<<<<<< HEAD
-	t1 = [1,5.5,150,9]
-	t2 = [2,6,182,11]
-	
-	test = []
-	test.append(t1)
-	test.append(t2)
-	
-=======
 	t1 = [1,4,5,6]
 	t2 = [1,1,2,3]
 	test = []
 	test.append(t1)
 	test.append(t2)
->>>>>>> 7ac78c5f08d97e30a0e3c3d5f442551aa53e383b
 	p = Perceptron(data,2,test)
 	p.preprocess()
 	p.train_model()

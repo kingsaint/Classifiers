@@ -2,14 +2,15 @@ from Naive_Bayes import Naive_Bayes
 from Perceptron import Perceptron
 import operator
 
-DIRECTORY = "digitdata"
-DIGIT_LENGTH = 28
+DIRECTORY = "facedata"
+DIGIT_LENGTH = 70
+DIGIT_WIDTH = 60
 digitdata = []
 digitlabels = []
 digittestdata = []
 digittestlabels = []
 def parse_training_data():
-    with open(DIRECTORY + "/trainingimages", "rb") as f:
+    with open(DIRECTORY + "/facedatatrain", "rb") as f:
 	temp = []
 	counter = 1
 	for line in f:
@@ -18,14 +19,14 @@ def parse_training_data():
 		temp = []
 		counter = 1
 	    else:
-		temp.append(line.replace("\n", "").ljust(30, " "))
+		temp.append(line.replace("\n", "").ljust(DIGIT_WIDTH, " "))
 		counter += 1
-    with open(DIRECTORY + "/traininglabels", "rb") as f:
+    with open(DIRECTORY + "/facedatatrainlabels", "rb") as f:
 	for line in f:
 	    digitlabels.append(int(line))
 
 def parse_testing_data():
-    with open(DIRECTORY + "/testimages", "rb") as f:
+    with open(DIRECTORY + "/facedatatest", "rb") as f:
 	temp = []
 	counter = 1
 	for line in f:
@@ -34,9 +35,9 @@ def parse_testing_data():
 		temp = []
 		counter = 1
 	    else:
-		temp.append(line.replace("\n", "").ljust(30, " "))
+		temp.append(line.replace("\n", "").ljust(DIGIT_WIDTH, " "))
 		counter += 1
-    with open(DIRECTORY + "/testlabels", "rb") as f:
+    with open(DIRECTORY + "/facedatatestlabels", "rb") as f:
 	for line in f:
 	    digittestlabels.append(int(line))
 
@@ -242,12 +243,12 @@ def get_loops(digit):
 	for c in color_counts:
 	    temp = temp + c[0]*c[1]
 	temp_digit_avg.append(temp)
-	print color_counts
+	#print color_counts
 	temp_digit_max.append(color_counts[0][0])
 
     #return len(numColors)
     temp_digit_max.append(max(numColors))
-    print "Loops: %s"%(temp_digit_max)
+    #print "Loops: %s"%(temp_digit_max)
     return temp_digit_max
 
 def get_outline_text(digit):
@@ -533,7 +534,7 @@ def get_diagonals(digit):
 	#print chunk
 
     #print "(%s, %s)"%(v.x, v.y)
-    print "diags: %s, straight: %s"%(diags, straigt)
+    #print "diags: %s, straight: %s"%(diags, straigt)
     return [diags, straigt]
     return hog.values()
 
@@ -541,7 +542,7 @@ def get_diagonals(digit):
 def get_filled_blocks(block_density):
     filled = []
     for b in block_density:
-	if b > .5:
+	if b > .3:
 	    filled.append(1)
 	else:
 	    filled.append(0)
@@ -549,11 +550,16 @@ def get_filled_blocks(block_density):
 
 def extract_features(digit):
    feature_1 = get_loops_horizontal(digit)
+   #print "horizontal loops: %s"%(feature_1)
    feature_2 = get_block_density(digit)
+   #print "block density: %s"%(feature_2)
    feature_3 = get_filled_blocks(feature_2)
+   #print "filled blocks: %s"%(feature_3)
    #feature_3 = []
    feature_4 = get_loops(digit)
+   #print "loops: %s"%(feature_4)
    feature_5 = get_diagonals(digit)
+   #print "diags: %s"%(feature_5)
    #feature_5 = []
    return feature_1 + feature_2 + feature_3 + feature_4 + feature_5
    #return feature_5
@@ -604,6 +610,7 @@ def main():
 	print "$"*50
 	features = extract_features(d)
 	train_matrix.append([i] + features + [l])
+	print train_matrix[-1]
 	i+=1
     train_matrix = reduce_matrix_train(train_matrix)
     #print "train_matrix"
@@ -616,10 +623,10 @@ def main():
     i = 0
     #print '\n'.join(digittestdata[0])
     for d in digittestdata:
-	#print "^"*50
-	#print "\n".join(d)
-	#print l
-	#print "$"*50
+	print "^"*50
+	print "\n".join(d)
+	print l
+	print "$"*50
 	features = extract_features(d)
 	test_matrix.append([i] + features)
 	i+= 1
@@ -631,7 +638,7 @@ def main():
     #for test in test_matrix:
 	#print len(test)
 
-    nb = Naive_Bayes(train_matrix, 10,test_matrix )
+    nb = Naive_Bayes(train_matrix, 2,test_matrix)
     nb.preprocess()
     nb.train_model()
     testpredictions = nb.test_model()
@@ -645,7 +652,7 @@ def main():
 	print "%s\t%s"%(prediction, label)
     print "Final: %s"%(float(correct)/(correct + incorrect))
 
-    p = Perceptron(train_matrix, 10,test_matrix )
+    p = Perceptron(train_matrix, 2,test_matrix )
     p.preprocess()
     p.train_model()
     testpredictions = p.test_model()
