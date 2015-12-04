@@ -176,7 +176,10 @@ class Naive_Bayes:
 				joint_prob = 1.0
 				for f in range(1,len(t)):
 					if self.TYPE_OF_FEATURES[f-1] == 1:
-						joint_prob *= float(str(self.PARSED_JSON[str(f-1)][str(t[f])][str(l)]["cond_prior"]))
+						if t[f] in self.PARSED_JSON[str(f-1)]:
+							joint_prob *= float(str(self.PARSED_JSON[str(f-1)][str(t[f])][str(l)]["cond_prior"]))
+						else:
+							joint_prob = joint_prob * (1.0/self.number_of_instances)
 					else:
 						if math.isnan(self.normal_dist(l,f,t[f])):
 				    			joint_prob = joint_prob*1
@@ -193,7 +196,7 @@ class Naive_Bayes:
 					output_class = i
 			OUTPUT.append(output_class)	
 
-		print OUTPUT
+		return OUTPUT
 
 
 
