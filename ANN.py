@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import numpy
+import random
 
 class ANN:
 
@@ -8,8 +9,8 @@ class ANN:
 		self.training_data = training_data
 		self.test_data = test_data
 		self.num_of_labels = num_of_labels
+		self.OUTPUT_LAYER_W_VECTORS = []
 
-	OUTPUT_LAYER_W_VECTORS = []
 	HIDDEN_LAYER_W_VECTORS = []
 	ITERATIONS = 10
 	HIDDEN_NODES = 2
@@ -18,20 +19,17 @@ class ANN:
 	TARGET_OUTPUT = []
 	HIDDEN_LAYER_OUTPUT = []
 	feature_v_length = 0
-	DEBUG = False
+	DEBUG = True
 
 	def preprocess(self):
 
 		# initialize the weight vectors and bias for hidden layer nodes
 
-	    for j in range(0,self.HIDDEN_NODES):
-		w_vector = []
-
 		self.feature_v_length = len(self.training_data[0])-2
 		for i in range(0,self.HIDDEN_NODES):
 			w_vector = []
 			for j in range(0,self.feature_v_length):
-				w_vector.append(0.0)
+				w_vector.append(random.random())
 
 
 			self.HIDDEN_LAYER_W_VECTORS.append(w_vector)
@@ -39,15 +37,17 @@ class ANN:
 			#self.HIDDEN_LAYER_OUTPUT.append(0.0)
 
 		#initialize the wight vectors and bias for output layer nodes
+		print "num_of_labels:%s"%(self.num_of_labels)
 		for i in range(0,self.num_of_labels):
 			w_vector = []
 			for j in range(0,self.HIDDEN_NODES):
-				w_vector.append(1.0)
+				w_vector.append(random.random())
 
 
 			self.OUTPUT_LAYER_W_VECTORS.append(w_vector)
 			self.OUTPUT_LAYER_BIAS.append(1.0)
 			self.TARGET_OUTPUT.append(0.0)
+		print "OUTPUT_LAYER_W_VECTORS:%s"%(self.OUTPUT_LAYER_W_VECTORS)
 
 
 	def train_model(self):
@@ -113,6 +113,7 @@ class ANN:
 					error = OUTPUT[l]*(1-OUTPUT[l])*(self.TARGET_OUTPUT[l] - OUTPUT[l])
 					OUTPUT_LAYER_ERROR.append(error)
 				self.TARGET_OUTPUT[j[len(j)-1]] = 0
+				print "OUTPUT_LAYER_ERROR:%s"%(OUTPUT_LAYER_ERROR)
 
 				# Calculate the error of each of the hidden layer nodes
 
@@ -221,6 +222,7 @@ class ANN:
 				    output_class = l
 
 		    output_array.append(output_class)
+	    print output_array
 	    return output_array
 
 

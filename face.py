@@ -359,13 +359,13 @@ def get_diagonals(digit):
 	#for arr in chunk:
 	    #print arr
 	#print "\n"
-    hog = {}
-    possible_values = ['0', '1', '-1', '2']
-    for a in possible_values:
-	for b in possible_values:
-	    for c in possible_values:
-		for d in possible_values:
-		    hog[a+b+c+d] = 0
+#    hog = {}
+    #possible_values = ['0', '1', '-1']
+    #for a in possible_values:
+	#for b in possible_values:
+	    #for c in possible_values:
+		#for d in possible_values:
+		    #hog[a+b+c+d] = 0
 		    #for e in possible_values:
 			#for f in possible_values:
 			    #for g in possible_values:
@@ -476,7 +476,7 @@ def get_diagonals(digit):
     #h2 - Left - Right
     #h3 - TopLeft - BottomLeft
     #h4 - TopRight - BottomLeft
-    #for i in range(0, len(temp_digit)):
+#    for i in range(0, len(temp_digit)):
 	#for j in range(0, len(temp_digit[0])):
 	    #if i == 0 or i == len(temp_digit)-1:
 		#if j == 0 or j == len(temp_digit[0])-1:
@@ -604,15 +604,15 @@ def extract_features_nb(digit):
    feature_2 = get_block_density(digit)
    feature_3_1 = get_filled_blocks3(feature_2)
    feature_3_2 = get_filled_blocks5(feature_2)
+   feature_3_2 = []
    feature_3_3 = get_filled_blocks7(feature_2)
+   feature_3_3 = []
    feature_3 = feature_3_1 + feature_3_2 + feature_3_3
    #feature_3 = []
    feature_4 = get_loops(digit)
    feature_5 = get_diagonals(digit)
-   feature_6 = get_pixels(digit)
    #feature_5 = []
-   return feature_6
-   return feature_1 + feature_3 + feature_4 + feature_5 + feature_6
+   return feature_1 + feature_3 + feature_4 + feature_5
    #return feature_5
 
 reduce_features = []

@@ -181,13 +181,13 @@ class Node:
 	self.output = -1
 	self.weights = []
 	for i in range(num_weights):
-	    #weight = .5
 	    weight = random.random()
+	    weight = .5
 	    self.weights.append(weight)
 
 
 class ANN:
-    ITERATIONS = 100
+    ITERATIONS = 10
     DEBUG = False
 
 
