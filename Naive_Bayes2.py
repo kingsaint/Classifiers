@@ -27,6 +27,8 @@ class Naive_Bayes:
 		self.num_of_labels = num_of_labels
 
    	def isDiscrete(self,f_c):
+		if self.DEBUG: print "f_c"
+		if self.DEBUG: print f_c
 		u = numpy.unique(f_c)
 		for n in range(0,len(u)):
 			if isinstance(u[n],int):
@@ -44,21 +46,21 @@ class Naive_Bayes:
 		#print json.dumps(self.PARSED_JSON, sort_keys = True, indent = 4)
 
 	def for_Discrete(self,feature,feature_splitted,f_no):
-		
+
 		u = numpy.unique(feature)
 		json_string = '{'
 		for i in range(0,len(u)-1):
 			json_string +='\"'+str(u[i])+'\":{},'
 		json_string +='\"'+str(u[i+1])+'\":{}}'
 		self.PARSED_JSON[str(f_no)] = json.loads(json_string)
-		for i in range(0,len(u)): 
+		for i in range(0,len(u)):
 			json_string2 = '{'
 			for l in range(0,self.num_of_labels-1):
-				json_string2 += '\"'+str(l)+'\": {"count":0,"cond_prior":0},' 
+				json_string2 += '\"'+str(l)+'\": {"count":0,"cond_prior":0},'
 			json_string2 += '\"'+str(l+1)+'\":{"count":0,"cond_prior":0}}'
 			self.PARSED_JSON[str(f_no)][str(u[i])] = json.loads(json_string2)
-		
-		
+
+
 
 		for l in range(0,self.num_of_labels):
 			for i in range(0,len(feature_splitted[l])):
@@ -66,19 +68,20 @@ class Naive_Bayes:
 				s =int(self.PARSED_JSON[str(f_no)][str(feature_splitted[l][i])][str(l)]["count"])
 				s +=1
 				self.PARSED_JSON[str(f_no)][str(feature_splitted[l][i])][str(l)]["count"] = s
-		
+
 		print json.dumps(self.PARSED_JSON, sort_keys = True, indent = 4)
 
 	def for_Continuous(self,feature,f_no):
+		if self.DEBUG: print "continuous"
 		for l in range(0,self.num_of_labels):
 			self.MEAN[f_no][l] = numpy.mean(feature[l])
 			self.SD[f_no][l] = numpy.std(feature[l])
 
 
    	def preprocess(self):
-		
+
 		for i in range(0,self.num_of_labels):
-		
+
 			self.INSTANCES_OF_LABELS.append(0)
 		self.number_of_instances = len(self.training_data)
 		self.number_of_features = len(self.training_data[0])-2
@@ -105,35 +108,35 @@ class Naive_Bayes:
 		print self.MEAN
 		print self.SD
 
-		
 
-			
+
+
 		for t in self.training_data:
-			tuples_label = t[len(t)-1]
+			tuples_label = t[-1]
 			self.INSTANCES_OF_LABELS[tuples_label] += 1
 			for f in range(0,self.number_of_features):
 				self.FEATURES[f].append(t[f+1])
 				self.FEATURES_SPLITTED_ON_LABEL[f][tuples_label].append(t[f+1])
-				
+
 
 		print self.FEATURES
 		print self.INSTANCES_OF_LABELS
 		print self.FEATURES_SPLITTED_ON_LABEL
 
 		for f in range(0,self.number_of_features):
-			
+
 			if self.isDiscrete(self.FEATURES[f]):
 				self.TYPE_OF_FEATURES.append(1)
 				self.for_Discrete(self.FEATURES[f],self.FEATURES_SPLITTED_ON_LABEL[f],f)
 			else:
 				self.TYPE_OF_FEATURES.append(0)
-				self.for_Continuous(self.FEATURES_SPLITTED_ON_LABEL[f],f)	
-			
+				self.for_Continuous(self.FEATURES_SPLITTED_ON_LABEL[f],f)
+
 		print self.TYPE_OF_FEATURES
-				
-		print self.MEAN	
+
+		print self.MEAN
 		print self.SD
-	
+
 	def train_model(self):
 		for l in range(0,self.num_of_labels):
 			self.PRIOR_PROBABILITY.append(self.INSTANCES_OF_LABELS[l]/float(self.number_of_instances))
@@ -164,12 +167,12 @@ class Naive_Bayes:
 
 		return ((1/numpy.sqrt(2*3.14)*self.SD[j-1][i])*numpy.power(2.7,-((data - self.MEAN[j-1][i])*(data - self.MEAN[j-1][i])/(2*self.SD[j-1][i]*self.SD[j-1][i]))))
 
-	
+
 
 
 	def test_model(self):
 		OUTPUT = []
-		
+
 		for t in self.test_data:
 			posterior_prob = []
 			for l in range(0,self.num_of_labels):
@@ -186,15 +189,15 @@ class Naive_Bayes:
 						else:
 				    			joint_prob = joint_prob*self.normal_dist(l,f,t[f])
 				posterior_prob.append(joint_prob)
-						
-						
+
+
 			max_posterior_prob = posterior_prob[0]
 			output_class = 0
 			for i in range(0,self.num_of_labels):
 				if posterior_prob[i] > max_posterior_prob :
 					max_posterior_prob = posterior_prob[i]
 					output_class = i
-			OUTPUT.append(output_class)	
+			OUTPUT.append(output_class)
 
 		return OUTPUT
 

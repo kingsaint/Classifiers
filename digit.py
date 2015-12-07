@@ -1,6 +1,6 @@
 from Naive_Bayes import Naive_Bayes
 from Perceptron import Perceptron
-from ANN import ANN
+from ANN2 import ANN
 import operator
 
 DIRECTORY = "digitdata"
@@ -724,6 +724,7 @@ def main():
 
     elif MODE==NN:
 	train_matrix = []
+	train_labels = []
 	i = 0
 	for d,l in zip(digitdata, digitlabels):
 	    print "^"*50
@@ -731,7 +732,8 @@ def main():
 	    print l
 	    print "$"*50
 	    features = extract_features(d)
-	    train_matrix.append([i] + features + [l])
+	    train_matrix.append(features)
+	    train_labels.append(l)
 	    i+=1
 	train_matrix = reduce_matrix_train(train_matrix)
 	#print "train_matrix"
@@ -741,15 +743,17 @@ def main():
 	parse_testing_data()
 
 	test_matrix = []
+	test_labels = []
 	i = 0
 	#print '\n'.join(digittestdata[0])
-	for d in digittestdata:
+	for d,l in zip(digittestdata, digittestlabels):
 	    #print "^"*50
 	    #print "\n".join(d)
 	    #print l
 	    #print "$"*50
 	    features = extract_features(d)
-	    test_matrix.append([i] + features)
+	    test_matrix.append(features)
+	    test_labels.append(l)
 	    i+= 1
 
 	test_matrix = reduce_matrix_test(test_matrix)
@@ -759,10 +763,9 @@ def main():
 	#for test in test_matrix:
 	    #print len(test)
 
-	p = ANN(train_matrix,10,test_matrix)
-	p.preprocess()
-	p.train_model()
-	testpredictions = p.test_model()
+	p = ANN(train_matrix,train_labels,10,test_matrix, test_labels)
+	p.train()
+	testpredictions = p.test()
 	correct = 0
 	incorrect = 0
 	for prediction, label in zip(testpredictions, digittestlabels):

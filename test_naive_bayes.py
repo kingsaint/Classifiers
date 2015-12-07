@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from Naive_Bayes import Naive_Bayes
+from Naive_Bayes2 import Naive_Bayes
 from array import array
 def main():
 
