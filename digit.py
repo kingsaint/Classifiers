@@ -606,9 +606,9 @@ def extract_features_nb(digit):
    #feature_3 = []
    feature_4 = get_loops(digit)
    feature_5 = get_diagonals(digit)
-   #feature_6 = get_pixels(digit)
+   feature_6 = get_pixels(digit)
    #feature_5 = []
-   return feature_1 + feature_3 + feature_4 + feature_5
+   return feature_1 + feature_3 + feature_4 + feature_5 + feature_6
    #return feature_5
 
 reduce_features = []

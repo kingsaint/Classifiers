@@ -32,7 +32,7 @@ def main():
 	data.append(r5)
 	data.append(r6)
 	data.append(r7)
-	#data.append(r8)
+	data.append(r8)
 	#data.append(r9)
 	#data.append(r10)
 

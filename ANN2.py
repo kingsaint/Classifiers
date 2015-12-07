@@ -9,14 +9,14 @@ def sigmoid(x):
     return math.tanh(x)
 
 class NeuralNetwork:
-    DEBUG = False
+    DEBUG = True
     LEARNING_RATE = .5
 
 
     def __init__(self,NUM_INPUT_NODES, NUM_LABELS):
 	self.NUM_OUTPUT_NODES = NUM_LABELS
 	self.NUM_INPUT_NODES = NUM_INPUT_NODES + 1
-	self.NUM_HIDDEN_NODES = int(math.floor((self.NUM_INPUT_NODES)/float(2)))
+	self.NUM_HIDDEN_NODES = int(math.ceil((self.NUM_INPUT_NODES + self.NUM_OUTPUT_NODES)/float(2)))
 	#self.NUM_HIDDEN_NODES = NUM_INPUT_NODES/2.0
 	self.INPUT_NODES = []
 	self.HIDDEN_NODES = []
@@ -58,7 +58,7 @@ class NeuralNetwork:
 	    if self.DEBUG: print "hidden node: %s, output: %s"%(j, net)
 	    self.HIDDEN_NODES[j].output = sigmoid(net)
 
-	output = 0.0
+	output = []
 	#calculate output for all output nodes
 	for k in range(self.NUM_OUTPUT_NODES):
 	    #calculate feature*weight from all hidden node output(features which have activation function applied)
@@ -68,13 +68,13 @@ class NeuralNetwork:
 	    #apply activation function
 	    if self.DEBUG: print "output node: %s, output: %s"%(k, sigmoid(net))
 	    self.OUTPUT_NODES[k].output = sigmoid(net)
-	    output = sigmoid(net)
+	    output.append(sigmoid(net))
 	return output
 
     def backpropagate(self, target):
         output_deltas = [0.0] * self.NUM_OUTPUT_NODES
         for k in range(self.NUM_OUTPUT_NODES):
-            error = target-self.OUTPUT_NODES[k].output
+            error = target[k]-self.OUTPUT_NODES[k].output
             output_deltas[k] = dsigmoid(self.OUTPUT_NODES[k].output) * error
 
 
@@ -106,14 +106,14 @@ class NeuralNetwork:
 	if self.DEBUG: print "curr_label:%s"%(label)
 	targets = []
 	self.update(features)
-	#for k in range(self.NUM_OUTPUT_NODES):
-	    #if k == label:
-		#targets.append(1.0)
-	    #else:
-		#targets.append(0.0)
+	for k in range(self.NUM_OUTPUT_NODES):
+	    if k == label:
+		targets.append(1.0)
+	    else:
+		targets.append(0.0)
 
 
-	self.backpropagate(label)
+	self.backpropagate(targets)
 	#apply backpropogration algorithm
 
 	# calculate error terms for output
@@ -187,7 +187,7 @@ class Node:
 
 
 class ANN:
-    ITERATIONS = 5
+    ITERATIONS = 100
     DEBUG = False
 
 
@@ -198,42 +198,43 @@ class ANN:
 	self.test_data_labels = test_data_labels
 	self.num_of_labels = num_of_labels
 	self.ANN = []
-	for i in range(num_of_labels):
-	    self.ANN.append(NeuralNetwork(len(training_data[0]), 1))
-	for i in range(num_of_labels):
-	    self.ANN[i].preprocess()
-	#self.ANN1 = NeuralNetwork(len(training_data[0]), 1)
-	#self.ANN1.preprocess()
+	#for i in range(num_of_labels):
+	    #self.ANN.append(NeuralNetwork(len(training_data[0]), 1))
+	#for i in range(num_of_labels):
+	    #self.ANN[i].preprocess()
+	self.ANN1 = NeuralNetwork(len(training_data[0]), self.num_of_labels)
+	self.ANN1.preprocess()
 
     def train(self):
 	counter = 0.0
 	total = len(self.training_data)
 	for i in range(self.ITERATIONS):
 	    for features,label in zip(self.training_data, self.training_data_labels):
-		counter+=1
-		print "percentage: %s"%(counter/total)
-		for i in range(self.num_of_labels):
-		    if i == label:
-			if self.DEBUG: print "training ann:%s with %s"%(i, 1)
-			self.ANN[i].train(features, 1)
-		    else:
-			if self.DEBUG: print "training ann:%s with %s"%(i, 0)
-			self.ANN[i].train(features, 0)
+		#counter+=1
+		#print "percentage: %s"%(counter/total)
+		#for i in range(self.num_of_labels):
+		    #if i == label:
+			#if self.DEBUG: print "training ann:%s with %s"%(i, 1)
+			#self.ANN[i].train(features, 1)
+		    #else:
+			#if self.DEBUG: print "training ann:%s with %s"%(i, 0)
+			#self.ANN[i].train(features, 0)
 	#for i in range(self.ITERATIONS):
 	    #for features,label in zip(self.training_data, self.training_data_labels):
-		#self.ANN1.train(features, label)
+		self.ANN1.train(features, label)
 
     def test(self):
 	output_class = []
 	for features, label in zip(self.test_data, self.test_data_labels):
 	    print "label: %s"%(label)
-	    test_arr = []
-	    for i in range(self.num_of_labels):
-		#print "ann:%s"%(i)
-		output = self.ANN[i].test(features)
-		test_arr.append(output)
-	    print "output:%s"%(test_arr)
-	    output_class.append(test_arr.index(max(test_arr)))
+	    #test_arr = []
+	    output = self.ANN1.test(features)
+	    #for i in range(self.num_of_labels):
+		##print "ann:%s"%(i)
+		#output = self.ANN[i].test(features)
+		#test_arr.append(output)
+	    print "output:%s"%(output)
+	    output_class.append(output.index(max(output)))
 	print output_class
 	return output_class
 
@@ -241,7 +242,6 @@ class ANN:
 	#total_output = []
 	#for features, label in zip(self.test_data, self.test_data_labels):
 	    #print "label:%s"%(label)
-	    #output = self.ANN1.test(features)
 	    #print "output:%s"%(output)
 	    #total_output.append(output)
 	#return total_output
