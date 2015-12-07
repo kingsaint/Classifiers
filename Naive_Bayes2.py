@@ -189,6 +189,7 @@ class Naive_Bayes:
 						else:
 				    			joint_prob = joint_prob*self.normal_dist(l,f,t[f])
 				posterior_prob.append(joint_prob)
+			print posterior_prob
 
 
 			max_posterior_prob = posterior_prob[0]

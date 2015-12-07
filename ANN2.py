@@ -206,8 +206,12 @@ class ANN:
 	#self.ANN1.preprocess()
 
     def train(self):
+	counter = 0.0
+	total = len(self.training_data)
 	for i in range(self.ITERATIONS):
 	    for features,label in zip(self.training_data, self.training_data_labels):
+		counter+=1
+		print "percentage: %s"%(counter/total)
 		for i in range(self.num_of_labels):
 		    if i == label:
 			if self.DEBUG: print "training ann:%s with %s"%(i, 1)

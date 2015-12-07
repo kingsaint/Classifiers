@@ -1,4 +1,4 @@
-from Naive_Bayes import Naive_Bayes
+from Naive_Bayes3 import Naive_Bayes
 from Perceptron import Perceptron
 from ANN2 import ANN
 import operator
@@ -544,10 +544,28 @@ def get_diagonals(digit):
 
 
 
-def get_filled_blocks(block_density):
+def get_filled_blocks5(block_density):
     filled = []
     for b in block_density:
 	if b > .5:
+	    filled.append(1)
+	else:
+	    filled.append(0)
+    return filled
+
+def get_filled_blocks3(block_density):
+    filled = []
+    for b in block_density:
+	if b > .5:
+	    filled.append(1)
+	else:
+	    filled.append(0)
+    return filled
+
+def get_filled_blocks7(block_density):
+    filled = []
+    for b in block_density:
+	if b > .7:
 	    filled.append(1)
 	else:
 	    filled.append(0)
@@ -566,13 +584,31 @@ def get_pixels(digit):
 def extract_features(digit):
    feature_1 = get_loops_horizontal(digit)
    feature_2 = get_block_density(digit)
-   feature_3 = get_filled_blocks(feature_2)
+   feature_3_1 = get_filled_blocks3(feature_2)
+   feature_3_2 = get_filled_blocks5(feature_2)
+   feature_3_3 = get_filled_blocks7(feature_2)
+   feature_3 = feature_3_1 + feature_3_2 + feature_3_3
    #feature_3 = []
    feature_4 = get_loops(digit)
    feature_5 = get_diagonals(digit)
    #feature_6 = get_pixels(digit)
    #feature_5 = []
    return feature_1 + feature_2 + feature_3 + feature_4 + feature_5
+   #return feature_5
+
+def extract_features_nb(digit):
+   feature_1 = get_loops_horizontal(digit)
+   feature_2 = get_block_density(digit)
+   feature_3_1 = get_filled_blocks3(feature_2)
+   feature_3_2 = get_filled_blocks5(feature_2)
+   feature_3_3 = get_filled_blocks7(feature_2)
+   feature_3 = feature_3_1 + feature_3_2 + feature_3_3
+   #feature_3 = []
+   feature_4 = get_loops(digit)
+   feature_5 = get_diagonals(digit)
+   #feature_6 = get_pixels(digit)
+   #feature_5 = []
+   return feature_1 + feature_3 + feature_4 + feature_5
    #return feature_5
 
 reduce_features = []
@@ -612,7 +648,7 @@ def reduce_matrix_test(matrix):
 
 def main():
     parse_training_data()
-    MODE = NN
+    MODE = PERCEPTRON
     if MODE == PERCEPTRON:
 	train_matrix = []
 	i = 0
@@ -671,7 +707,7 @@ def main():
 	    print "\n".join(d)
 	    print l
 	    print "$"*50
-	    features = extract_features(d)
+	    features = extract_features_nb(d)
 	    train_matrix.append([i] + features + [l])
 	    i+=1
 	train_matrix = reduce_matrix_train(train_matrix)
@@ -703,15 +739,15 @@ def main():
 	    #print "\n".join(d)
 	    #print l
 	    #print "$"*50
-	    features = extract_features(d)
+	    features = extract_features_nb(d)
 	    test_matrix.append([i] + features)
 	    i+= 1
 
 	test_matrix = reduce_matrix_test(test_matrix)
 	nb = Naive_Bayes(train_matrix, 10,test_matrix )
 	nb.preprocess()
-	nb.train_model()
-	testpredictions = nb.test_model()
+	nb.train()
+	testpredictions = nb.test()
 	correct = 0
 	incorrect = 0
 	for prediction, label in zip(testpredictions, digittestlabels):
