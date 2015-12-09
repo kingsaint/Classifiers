@@ -1,6 +1,7 @@
 from Naive_Bayes3 import Naive_Bayes
 from Perceptron import Perceptron
 from ANN import ANN
+from MIRA import MIRA
 import operator
 
 DIRECTORY = "digitdata"
@@ -9,6 +10,7 @@ MODE = -1
 PERCEPTRON = 0
 NAIVE_BAYES = 1
 NN = 2
+M = 3
 digitdata = []
 digitlabels = []
 digittestdata = []
@@ -649,7 +651,7 @@ def reduce_matrix_test(matrix):
 
 def main():
     parse_training_data()
-    MODE = NN
+    MODE = M
     if MODE == PERCEPTRON:
 	train_matrix = []
 	i = 0
@@ -815,7 +817,55 @@ def main():
 		incorrect +=1
 	    print "%s\t%s"%(prediction, label)
 	print "Final: %s"%(float(correct)/(correct + incorrect))
+	
+    elif MODE == M:
+	train_matrix = []
+	i = 0
+	for d,l in zip(digitdata, digitlabels):
+	    print "^"*50
+	    print "\n".join(d)
+	    print l
+	    print "$"*50
+	    features = extract_features(d)
+	    train_matrix.append([i] + features + [l])
+	    i+=1
+	train_matrix = reduce_matrix_train(train_matrix)
+	#print "train_matrix"
+	#for train in train_matrix:
+	    #print len(train)
+	#print train_matrix
+	parse_testing_data()
 
+	test_matrix = []
+	i = 0
+	#print '\n'.join(digittestdata[0])
+	for d in digittestdata:
+	    #print "^"*50
+	    #print "\n".join(d)
+	    #print l
+	    #print "$"*50
+	    features = extract_features(d)
+	    test_matrix.append([i] + features)
+	    i+= 1
 
+	test_matrix = reduce_matrix_test(test_matrix)
 
+	#print "test_matrix"
+	#print test_matrix
+	#for test in test_matrix:
+	    #print len(test)
+
+	p = MIRA(train_matrix, 10,test_matrix )
+	p.preprocess()
+	p.train_model()
+	testpredictions = p.test_model()
+	correct = 0
+	incorrect = 0
+	for prediction, label in zip(testpredictions, digittestlabels):
+	    if prediction == label:
+		correct += 1
+	    else:
+		incorrect +=1
+	    print "%s\t%s"%(prediction, label)
+	print "Final: %s"%(float(correct)/(correct + incorrect))
 main()

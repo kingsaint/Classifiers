@@ -1,6 +1,6 @@
 import numpy
 
-class Perceptron:
+class MIRA:
 
 	def __init__(self,training_data,num_of_labels,test_data):
 		self.training_data = training_data
@@ -9,9 +9,7 @@ class Perceptron:
 
 	DEBUG = False
 	LABEL_W_VECTORS = []
-	ITERATIONS = 100
-	BIAS = []
-	TARGET_OUTPUT = []
+	ITERATIONS = 1
 	feature_v_length = 0
 
 	def preprocess(self):
@@ -25,96 +23,76 @@ class Perceptron:
 		# initialize the weight vectors to 0.0 and the bias to 1.0
 
 		    self.LABEL_W_VECTORS.append(w_vector)
-		    self.BIAS.append(1.0)
-		    self.TARGET_OUTPUT.append(0)
+		    
 
 		if self.DEBUG: print self.LABEL_W_VECTORS
+
+	def calculate_mod(self,feature):
+		result = 0
+		for i in range(len(feature)):
+			result += feature[i]*feature[i]
+
+		return numpy.sqrt(result)
+			
 
 	def train_model(self):
 		c = .001
 		for i in range(0,self.ITERATIONS):
 			for j in self.training_data:
 				if self.DEBUG: print "TRAINING TUPLE",j
-				INPUT = []
+				FEATURE = []
 				for k in range(1,len(j)-1):
-					INPUT.append(j[k])
-				#if self.DEBUG: print "Input vector"
-				#if self.DEBUG: print INPUT
-				#WEIGHTED_INPUT = []
-				#OUTPUT = []
-				#ERROR = []
-				self.TARGET_OUTPUT[j[len(j)-1]] = 1
+					FEATURE.append(j[k])
+				
+				target_output = j[-1]
+
+				f = self.calculate_mod(FEATURE)					
+
 				weighted_inputs = []
 				for l in range(0,self.num_of_labels):
 					weighted_input =0.0
 					for k in range(0,self.feature_v_length):
-						weighted_input += self.LABEL_W_VECTORS[l][k]*INPUT[k]
-					#WEIGHTED_INPUT.append(weighted_input)
+						weighted_input += self.LABEL_W_VECTORS[l][k]*FEATURE[k]
 					weighted_inputs.append(weighted_input)
 
 				max_weight_index = weighted_inputs.index(max(weighted_inputs))
-				if max_weight_index == j[-1]:
+				#print target_output
+				#print max_weight_index
+				if max_weight_index == target_output:
 				    continue
 				else:
-				    tau = 0
-				    for f in INPUT:
-					for l in range(self.num_of_labels):
-					    tau = min(c, ((self.LABEL_W_VECTORS[max_weight_index] - self.LABEL_W_VECTORS[j[-1]]) * f + 1.0) / (2.0 * (f * f)))
-				    for l in range(0,self.num_of_labels):
+					tau = 0
 
-					#output = weighted_input
+					diff_sum =	numpy.sum((numpy.array(self.LABEL_W_VECTORS[max_weight_index]) - numpy.array(self.LABEL_W_VECTORS[target_output]))*numpy.array(FEATURE))
 
-					#if self.DEBUG: print "Sigmoid output"
-					#if self.DEBUG: print output
+					tau = max(c,(diff_sum + 1)/(2*f*f))
 
-					error =(self.TARGET_OUTPUT[l] - output)
-					#ERROR.append(error)
+					for k in range(len(FEATURE)):
+						self.LABEL_W_VECTORS[target_output][k] += tau*FEATURE[k]
+						self.LABEL_W_VECTORS[max_weight_index][k] -= tau*FEATURE[k]
+					
+				if self.DEBUG: print self.LABEL_W_VECTORS	
 
-					LEARNING_RATE = 1.0/(1.0 + i)
-
-					if self.DEBUG: print "FOR",l
-					if self.DEBUG: print "Before Update"
-					if self.DEBUG: print self.LABEL_W_VECTORS
-					for k in range(0,self.feature_v_length):
-					    if self.DEBUG: print "l=",l,"k=",k
-					    #if self.DEBUG: print LEARNING_RATE*error*INPUT[k]
-					    if self.DEBUG: print "%s,%s"%(k, self.LABEL_W_VECTORS)
-					    self.LABEL_W_VECTORS[l][k] += LEARNING_RATE*error*INPUT[k] #problem here
-					    if self.DEBUG: print "%s,%s"%(k, self.LABEL_W_VECTORS)
-
-					if self.DEBUG: print "After Update"
-					if self.DEBUG: print self.LABEL_W_VECTORS
-
-					self.BIAS[l] = self.BIAS[l] + LEARNING_RATE*error
-				self.TARGET_OUTPUT[j[len(j)-1]] = 0
+					
 			if self.DEBUG: print "ITERATION ",i
 			if self.DEBUG: print "**********************"
 			if self.DEBUG: print self.LABEL_W_VECTORS
-			if self.DEBUG: print self.BIAS
-
-
-
-
-
-
+		
 
 	def test_model(self):
-	    output = []
-	    for t in self.test_data:
-		    CLASS_VALUE = []
-		    for l in range(0,self.num_of_labels):
-			    value = self.BIAS[l]
-			    for i in range(1,len(t)):
-				    value = value + self.LABEL_W_VECTORS[l][i-1]*t[i]
-			    CLASS_VALUE.append(value)
-
-		    if self.DEBUG: print CLASS_VALUE
-		    max_value = CLASS_VALUE[0]
-		    output_class = 0
-		    for l in range(0,self.num_of_labels):
-			    if CLASS_VALUE[l] > max_value :
-				    max_value = CLASS_VALUE[l]
-				    output_class = l
-
-		    output.append(output_class)
-	    return output
+		#print self.test_data
+		output = []
+	    	for t in self.test_data:
+			CLASS_VALUE = []
+			for l in range(0,self.num_of_labels):
+				
+				value = 0.0
+			   	for i in range(1,len(t)):
+					
+					value += self.LABEL_W_VECTORS[l][i-1]*t[i]
+			    	CLASS_VALUE.append(value)
+			
+			if self.DEBUG: print CLASS_VALUE
+		    	output_class = CLASS_VALUE.index(max(CLASS_VALUE))
+		    	output.append(output_class)
+	    	return output
