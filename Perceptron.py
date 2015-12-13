@@ -4,14 +4,14 @@ import numpy
 
 class Perceptron:
 
-	def __init__(self,training_data,num_of_labels,test_data):
+	def __init__(self,training_data,num_of_labels,test_data, iterations):
 		self.training_data = training_data
 		self.test_data = test_data
 		self.num_of_labels = num_of_labels
+		self.ITERATIONS = iterations
 
 	DEBUG = False
 	LABEL_W_VECTORS = []
-	ITERATIONS = 100
 	BIAS = []
 	TARGET_OUTPUT = []
 	feature_v_length = 0
@@ -20,7 +20,7 @@ class Perceptron:
 
 		for i in range(0,self.num_of_labels):
 		    w_vector = []
-		    self.feature_v_length = len(self.training_data[0])-2
+		    self.feature_v_length = len(self.training_data[0])-1
 		    for i in range(0,self.feature_v_length):
 			    w_vector.append(0.0)
 
@@ -38,7 +38,7 @@ class Perceptron:
 			for j in self.training_data:
 				if self.DEBUG: print "TRAINING TUPLE",j
 				INPUT = []
-				for k in range(1,len(j)-1):
+				for k in range(0,len(j)-1):
 					INPUT.append(j[k])
 				#if self.DEBUG: print "Input vector"
 				#if self.DEBUG: print INPUT
@@ -99,8 +99,8 @@ class Perceptron:
 		    CLASS_VALUE = []
 		    for l in range(0,self.num_of_labels):
 			    value = self.BIAS[l]
-			    for i in range(1,len(t)):
-				    value = value + self.LABEL_W_VECTORS[l][i-1]*t[i]
+			    for i in range(0,len(t)):
+				    value = value + self.LABEL_W_VECTORS[l][i]*t[i]
 			    CLASS_VALUE.append(value)
 
 		    if self.DEBUG: print CLASS_VALUE

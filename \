@@ -1,23 +1,24 @@
 from Naive_Bayes3 import Naive_Bayes
 from Perceptron import Perceptron
-from ANN3 import ANN
-from MIRA2 import MIRA
+from ANN2 import ANN
+from MIRA import MIRA
 import operator
 
-DIRECTORY = "digitdata"
-DIGIT_LENGTH = 28
-LABELS = 10
+DIRECTORY = "facedata"
+DIGIT_LENGTH = 70
+DIGIT_WIDTH = 60
 MODE = -1
 PERCEPTRON = 0
 NAIVE_BAYES = 1
 NN = 2
 M = 3
+LABELS = 2
 digitdata = []
 digitlabels = []
 digittestdata = []
 digittestlabels = []
 def parse_training_data():
-    with open(DIRECTORY + "/trainingimages", "rb") as f:
+    with open(DIRECTORY + "/facedatatrain", "rb") as f:
 	temp = []
 	counter = 1
 	for line in f:
@@ -26,14 +27,14 @@ def parse_training_data():
 		temp = []
 		counter = 1
 	    else:
-		temp.append(line.replace("\n", "").ljust(30, " "))
+		temp.append(line.replace("\n", "").ljust(DIGIT_WIDTH, " "))
 		counter += 1
-    with open(DIRECTORY + "/traininglabels", "rb") as f:
+    with open(DIRECTORY + "/facedatatrainlabels", "rb") as f:
 	for line in f:
 	    digitlabels.append(int(line))
 
 def parse_testing_data():
-    with open(DIRECTORY + "/testimages", "rb") as f:
+    with open(DIRECTORY + "/facedatatest", "rb") as f:
 	temp = []
 	counter = 1
 	for line in f:
@@ -42,11 +43,12 @@ def parse_testing_data():
 		temp = []
 		counter = 1
 	    else:
-		temp.append(line.replace("\n", "").ljust(30, " "))
+		temp.append(line.replace("\n", "").ljust(DIGIT_WIDTH, " "))
 		counter += 1
-    with open(DIRECTORY + "/testlabels", "rb") as f:
+    with open(DIRECTORY + "/facedatatestlabels", "rb") as f:
 	for line in f:
 	    digittestlabels.append(int(line))
+
 
 
 def get_multi_zone(digit):
@@ -250,12 +252,12 @@ def get_loops(digit):
 	for c in color_counts:
 	    temp = temp + c[0]*c[1]
 	temp_digit_avg.append(temp)
-	#print color_counts
+	print color_counts
 	temp_digit_max.append(color_counts[0][0])
 
     #return len(numColors)
     temp_digit_max.append(max(numColors))
-    #print "Loops: %s"%(temp_digit_max)
+    print "Loops: %s"%(temp_digit_max)
     return temp_digit_max
 
 def get_outline_text(digit):
@@ -359,13 +361,13 @@ def get_diagonals(digit):
 	#for arr in chunk:
 	    #print arr
 	#print "\n"
-    hog = {}
-    possible_values = ['0', '1', '-1', '2']
-    for a in possible_values:
-	for b in possible_values:
-	    for c in possible_values:
-		for d in possible_values:
-		    hog[a+b+c+d] = 0
+#    hog = {}
+    #possible_values = ['0', '1', '-1']
+    #for a in possible_values:
+	#for b in possible_values:
+	    #for c in possible_values:
+		#for d in possible_values:
+		    #hog[a+b+c+d] = 0
 		    #for e in possible_values:
 			#for f in possible_values:
 			    #for g in possible_values:
@@ -476,7 +478,7 @@ def get_diagonals(digit):
     #h2 - Left - Right
     #h3 - TopLeft - BottomLeft
     #h4 - TopRight - BottomLeft
-    #for i in range(0, len(temp_digit)):
+#    for i in range(0, len(temp_digit)):
 	#for j in range(0, len(temp_digit[0])):
 	    #if i == 0 or i == len(temp_digit)-1:
 		#if j == 0 or j == len(temp_digit[0])-1:
@@ -541,7 +543,7 @@ def get_diagonals(digit):
 	#print chunk
 
     #print "(%s, %s)"%(v.x, v.y)
-    #print "diags: %s, straight: %s"%(diags, straigt)
+    print "diags: %s, straight: %s"%(diags, straigt)
     return [diags, straigt]
     return hog.values()
 
@@ -604,14 +606,14 @@ def extract_features_nb(digit):
    feature_2 = get_block_density(digit)
    feature_3_1 = get_filled_blocks3(feature_2)
    feature_3_2 = get_filled_blocks5(feature_2)
+   feature_3_2 = []
    feature_3_3 = get_filled_blocks7(feature_2)
+   feature_3_3 = []
    feature_3 = feature_3_1 + feature_3_2 + feature_3_3
    #feature_3 = []
    feature_4 = get_loops(digit)
    feature_5 = get_diagonals(digit)
-   feature_6 = get_pixels(digit)
    #feature_5 = []
-   #return feature_6
    return feature_1 + feature_3 + feature_4 + feature_5
    #return feature_5
 
@@ -652,15 +654,15 @@ def reduce_matrix_test(matrix):
 
 def main():
     parse_training_data()
-    MODE = M
+    MODE = NN
     if MODE == PERCEPTRON:
 	train_matrix = []
 	i = 0
 	for d,l in zip(digitdata, digitlabels):
-	    #print "^"*50
-	    #print "\n".join(d)
-	    #print l
-	    #print "$"*50
+	    print "^"*50
+	    print "\n".join(d)
+	    print l
+	    print "$"*50
 	    features = extract_features(d)
 	    train_matrix.append([i] + features + [l])
 	    i+=1
@@ -690,7 +692,7 @@ def main():
 	#for test in test_matrix:
 	    #print len(test)
 
-	p = Perceptron(train_matrix, 10,test_matrix )
+	p = Perceptron(train_matrix, LABELS,test_matrix )
 	p.preprocess()
 	p.train_model()
 	testpredictions = p.test_model()
@@ -711,7 +713,7 @@ def main():
 	    print "\n".join(d)
 	    print l
 	    print "$"*50
-	    features = extract_features(d)
+	    features = extract_features_nb(d)
 	    train_matrix.append([i] + features + [l])
 	    i+=1
 	train_matrix = reduce_matrix_train(train_matrix)
@@ -743,12 +745,12 @@ def main():
 	    #print "\n".join(d)
 	    #print l
 	    #print "$"*50
-	    features = extract_features(d)
+	    features = extract_features_nb(d)
 	    test_matrix.append([i] + features)
 	    i+= 1
 
 	test_matrix = reduce_matrix_test(test_matrix)
-	nb = Naive_Bayes(train_matrix, 10,test_matrix )
+	nb = Naive_Bayes(train_matrix, LABELS,test_matrix )
 	nb.preprocess()
 	nb.train()
 	testpredictions = nb.test()
@@ -767,21 +769,13 @@ def main():
 	train_labels = []
 	i = 0
 	for d,l in zip(digitdata, digitlabels):
-	    #print "^"*50
-	    #print "\n".join(d)
-	    #print l
-	    #print "$"*50
-	    features = extract_features_nb(d)
-	    #train_matrix.append(features)
-	    labels = []
-	    for i in range(LABELS):
-		if i == l:
-			labels.append(1)
-		else:
-			labels.append(0)
-	    train_labels.append(labels)
-	    #train_labels.append(l)
+	    print "^"*50
+	    print "\n".join(d)
+	    print l
+	    print "$"*50
+	    features = extract_features(d)
 	    train_matrix.append(features)
+	    train_labels.append(l)
 	    i+=1
 	train_matrix = reduce_matrix_train(train_matrix)
 	#print "train_matrix"
@@ -799,9 +793,8 @@ def main():
 	    #print "\n".join(d)
 	    #print l
 	    #print "$"*50
-	    features = extract_features_nb(d)
+	    features = extract_features(d)
 	    test_matrix.append(features)
-	    #test_matrix.append(features)
 	    test_labels.append(l)
 	    i+= 1
 
@@ -812,7 +805,7 @@ def main():
 	#for test in test_matrix:
 	    #print len(test)
 
-	p = ANN(train_matrix,train_labels, 10,test_matrix)
+	p = ANN(train_matrix,train_labels,LABELS,test_matrix, test_labels)
 	p.train()
 	testpredictions = p.test()
 	correct = 0
@@ -825,16 +818,17 @@ def main():
 	    print "%s\t%s"%(prediction, label)
 	print "Final: %s"%(float(correct)/(correct + incorrect))
 
+
     elif MODE == M:
 	train_matrix = []
 	i = 0
 	for d,l in zip(digitdata, digitlabels):
-	    #print "^"*50
-	    #print "\n".join(d)
-	    #print l
-	    #print "$"*50
+	    print "^"*50
+	    print "\n".join(d)
+	    print l
+	    print "$"*50
 	    features = extract_features(d)
-	    train_matrix.append(features + [l])
+	    train_matrix.append([i] + features + [l])
 	    i+=1
 	train_matrix = reduce_matrix_train(train_matrix)
 	#print "train_matrix"
@@ -852,7 +846,7 @@ def main():
 	    #print l
 	    #print "$"*50
 	    features = extract_features(d)
-	    test_matrix.append(features)
+	    test_matrix.append([i] + features)
 	    i+= 1
 
 	test_matrix = reduce_matrix_test(test_matrix)
@@ -862,7 +856,7 @@ def main():
 	#for test in test_matrix:
 	    #print len(test)
 
-	p = MIRA(train_matrix, 10,test_matrix )
+	p = MIRA(train_matrix, LABELS,test_matrix )
 	p.preprocess()
 	p.train_model()
 	testpredictions = p.test_model()
@@ -875,4 +869,6 @@ def main():
 		incorrect +=1
 	    print "%s\t%s"%(prediction, label)
 	print "Final: %s"%(float(correct)/(correct + incorrect))
+
+
 main()

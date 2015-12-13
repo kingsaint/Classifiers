@@ -1,6 +1,6 @@
 from Naive_Bayes3 import Naive_Bayes
 from Perceptron import Perceptron
-from ANN2 import ANN
+from ANN3 import ANN
 from MIRA import MIRA
 import operator
 
@@ -252,12 +252,12 @@ def get_loops(digit):
 	for c in color_counts:
 	    temp = temp + c[0]*c[1]
 	temp_digit_avg.append(temp)
-	print color_counts
+	#print color_counts
 	temp_digit_max.append(color_counts[0][0])
 
     #return len(numColors)
     temp_digit_max.append(max(numColors))
-    print "Loops: %s"%(temp_digit_max)
+    #print "Loops: %s"%(temp_digit_max)
     return temp_digit_max
 
 def get_outline_text(digit):
@@ -543,7 +543,7 @@ def get_diagonals(digit):
 	#print chunk
 
     #print "(%s, %s)"%(v.x, v.y)
-    print "diags: %s, straight: %s"%(diags, straigt)
+    #print "diags: %s, straight: %s"%(diags, straigt)
     return [diags, straigt]
     return hog.values()
 
@@ -654,7 +654,7 @@ def reduce_matrix_test(matrix):
 
 def main():
     parse_training_data()
-    MODE = M
+    MODE = NN
     if MODE == PERCEPTRON:
 	train_matrix = []
 	i = 0
@@ -769,13 +769,21 @@ def main():
 	train_labels = []
 	i = 0
 	for d,l in zip(digitdata, digitlabels):
-	    print "^"*50
-	    print "\n".join(d)
-	    print l
-	    print "$"*50
-	    features = extract_features(d)
+	    #print "^"*50
+	    #print "\n".join(d)
+	    #print l
+	    #print "$"*50
+	    features = extract_features_nb(d)
+	    #train_matrix.append(features)
+	    labels = []
+	    for i in range(LABELS):
+		if i == l:
+			labels.append(1)
+		else:
+			labels.append(0)
+	    train_labels.append(labels)
+	    #train_labels.append(l)
 	    train_matrix.append(features)
-	    train_labels.append(l)
 	    i+=1
 	train_matrix = reduce_matrix_train(train_matrix)
 	#print "train_matrix"
@@ -793,8 +801,9 @@ def main():
 	    #print "\n".join(d)
 	    #print l
 	    #print "$"*50
-	    features = extract_features(d)
+	    features = extract_features_nb(d)
 	    test_matrix.append(features)
+	    #test_matrix.append(features)
 	    test_labels.append(l)
 	    i+= 1
 
@@ -805,7 +814,7 @@ def main():
 	#for test in test_matrix:
 	    #print len(test)
 
-	p = ANN(train_matrix,train_labels,LABELS,test_matrix, test_labels)
+	p = ANN(train_matrix,train_labels, LABELS,test_matrix)
 	p.train()
 	testpredictions = p.test()
 	correct = 0

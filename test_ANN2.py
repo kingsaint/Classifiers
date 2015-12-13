@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
-from ANN2 import ANN
+from ANN3 import ANN
 def main():
 
-	r1 = [0,0]
-	r2 = [0,1]
-	r3 = [1,0]
-	r4 = [1,1]
-	data_labels = [0,1,1,0]
+	r1 = [1,1]
+	r2 = [2,2]
+	r3 = [3,3]
+	r4 = [4,4]
+	data_labels = [[1, 0],[0, 1],[1, 0],[0, 1]]
 	#r3 = [3,5.58,170,10,1]
 	#r4 = [4,5.92,165,10,1]
 	#r5 = [5,5,100,6,0]
@@ -31,9 +31,10 @@ def main():
 
 
 
-	p = ANN(data,data_labels,2,data, data_labels)
+	p = ANN(data,data_labels,2,data)
 	p.train()
-	p.test()
+	predictions = p.test()
+	print predictions
 
 
 main()

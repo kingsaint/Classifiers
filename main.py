@@ -1,68 +1,47 @@
 from Naive_Bayes3 import Naive_Bayes
 from Perceptron import Perceptron
 from ANN3 import ANN
-from MIRA2 import MIRA
+from MIRA import MIRA
 import operator
+import argparse
+import time
 
-DIRECTORY = "digitdata"
-DIGIT_LENGTH = 28
-LABELS = 10
-MODE = -1
-PERCEPTRON = 0
-NAIVE_BAYES = 1
-NN = 2
-M = 3
-digitdata = []
-digitlabels = []
-digittestdata = []
-digittestlabels = []
-def parse_training_data():
-    with open(DIRECTORY + "/trainingimages", "rb") as f:
+train_data = []
+train_data_labels = []
+test_data = []
+test_data_labels = []
+
+def parse_training_data(train_file, train_label_file, length, width):
+    with open(train_file, "rb") as f:
 	temp = []
 	counter = 1
 	for line in f:
-	    if counter >= DIGIT_LENGTH:
-		digitdata.append(temp)
+	    if counter >= length:
+		train_data.append(temp)
 		temp = []
 		counter = 1
 	    else:
-		temp.append(line.replace("\n", "").ljust(30, " "))
+		temp.append(line.replace("\n", "").ljust(width, " "))
 		counter += 1
-    with open(DIRECTORY + "/traininglabels", "rb") as f:
+    with open(train_label_file, "rb") as f:
 	for line in f:
-	    digitlabels.append(int(line))
+	    train_data_labels.append(int(line))
 
-def parse_testing_data():
-    with open(DIRECTORY + "/testimages", "rb") as f:
+def parse_testing_data(test_file, test_label_file, length, width):
+    with open(test_file, "rb") as f:
 	temp = []
 	counter = 1
 	for line in f:
-	    if counter >= DIGIT_LENGTH:
-		digittestdata.append(temp)
+	    if counter >= length:
+		test_data.append(temp)
 		temp = []
 		counter = 1
 	    else:
-		temp.append(line.replace("\n", "").ljust(30, " "))
+		temp.append(line.replace("\n", "").ljust(width, " "))
 		counter += 1
-    with open(DIRECTORY + "/testlabels", "rb") as f:
+    with open(test_label_file, "rb") as f:
 	for line in f:
-	    digittestlabels.append(int(line))
-
-
-def get_multi_zone(digit):
-    white = 0
-    black = 0
-    for line in digit:
-	for char in line:
-	    #print char
-	    if char == ' ' or char == '\n':
-		white+=1
-	    else:
-		#print char
-		black+=1
-    #print white
-    #print black
-    return float(black)/(black+white)
+	    test_data_labels.append(int(line))
 
 def get_loops_horizontal(digit):
     EMPTY = 0
@@ -359,13 +338,13 @@ def get_diagonals(digit):
 	#for arr in chunk:
 	    #print arr
 	#print "\n"
-    hog = {}
-    possible_values = ['0', '1', '-1', '2']
-    for a in possible_values:
-	for b in possible_values:
-	    for c in possible_values:
-		for d in possible_values:
-		    hog[a+b+c+d] = 0
+#    hog = {}
+    #possible_values = ['0', '1', '-1']
+    #for a in possible_values:
+	#for b in possible_values:
+	    #for c in possible_values:
+		#for d in possible_values:
+		    #hog[a+b+c+d] = 0
 		    #for e in possible_values:
 			#for f in possible_values:
 			    #for g in possible_values:
@@ -476,7 +455,7 @@ def get_diagonals(digit):
     #h2 - Left - Right
     #h3 - TopLeft - BottomLeft
     #h4 - TopRight - BottomLeft
-    #for i in range(0, len(temp_digit)):
+#    for i in range(0, len(temp_digit)):
 	#for j in range(0, len(temp_digit[0])):
 	    #if i == 0 or i == len(temp_digit)-1:
 		#if j == 0 or j == len(temp_digit[0])-1:
@@ -599,22 +578,6 @@ def extract_features(digit):
    return feature_1 + feature_2 + feature_3 + feature_4 + feature_5
    #return feature_5
 
-def extract_features_nb(digit):
-   feature_1 = get_loops_horizontal(digit)
-   feature_2 = get_block_density(digit)
-   feature_3_1 = get_filled_blocks3(feature_2)
-   feature_3_2 = get_filled_blocks5(feature_2)
-   feature_3_3 = get_filled_blocks7(feature_2)
-   feature_3 = feature_3_1 + feature_3_2 + feature_3_3
-   #feature_3 = []
-   feature_4 = get_loops(digit)
-   feature_5 = get_diagonals(digit)
-   feature_6 = get_pixels(digit)
-   #feature_5 = []
-   #return feature_6
-   return feature_1 + feature_3 + feature_4 + feature_5
-   #return feature_5
-
 reduce_features = []
 def reduce_matrix_train(matrix):
     print "Number of features before reduce: %s"%(len(matrix[0]))
@@ -649,230 +612,95 @@ def reduce_matrix_test(matrix):
     print "Number of features: %s"%(len(matrix[0]))
     return matrix
 
+def loadData(percent):
+    total = len(train_data)
+    count = 0.0
+    train_matrix = []
+    for d,l in zip(train_data, train_data_labels):
+	count+=1
+	features = extract_features(d)
+	train_matrix.append(features + [l])
+	if count/total*100 >= percent:
+	    break
+    train_matrix = reduce_matrix_train(train_matrix)
+
+    test_matrix = []
+    for d in test_data:
+	features = extract_features(d)
+	test_matrix.append(features)
+
+    test_matrix = reduce_matrix_test(test_matrix)
+    return (train_matrix, test_matrix)
+
+def runAlgo(algo, num_of_labels, iterations, train_matrix, test_matrix):
+    start = time.time()
+    if algo == "perceptron":
+	if iterations is None:
+	    print "iterations required for perceptron"
+	    return
+	else:
+	    if iterations < 1:
+		print "more than 1 iteration required"
+		return
+	p = Perceptron(train_matrix, num_of_labels,test_matrix, iterations )
+    elif algo == "naivebayes":
+	p = Naive_Bayes(train_matrix, num_of_labels,test_matrix )
+    elif algo == "mira":
+	if iterations is None:
+	    print "iterations required for mira"
+	    return
+	else:
+	    if iterations < 1:
+		print "more than 1 iteration required"
+		return
+	p = MIRA(train_matrix, num_of_labels,test_matrix, iterations )
+    elif algo == "ann":
+	p = ANN(train_matrix, num_of_labels,test_matrix )
+    else:
+	print "algo not found"
+	return
+
+    p.preprocess()
+    p.train_model()
+    testpredictions = p.test_model()
+    correct = 0
+    incorrect = 0
+    for prediction, label in zip(testpredictions, test_data_labels):
+	if prediction == label:
+	    correct += 1
+	else:
+	    incorrect +=1
+	print "%s\t%s"%(prediction, label)
+    print "Final: %s"%(float(correct)/(correct + incorrect))
+    print "Total Time:%s sec"%((time.time() - start))
+
+
 
 def main():
-    parse_training_data()
-    MODE = M
-    if MODE == PERCEPTRON:
-	train_matrix = []
-	i = 0
-	for d,l in zip(digitdata, digitlabels):
-	    #print "^"*50
-	    #print "\n".join(d)
-	    #print l
-	    #print "$"*50
-	    features = extract_features(d)
-	    train_matrix.append([i] + features + [l])
-	    i+=1
-	train_matrix = reduce_matrix_train(train_matrix)
-	#print "train_matrix"
-	#for train in train_matrix:
-	    #print len(train)
-	#print train_matrix
-	parse_testing_data()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset", help="choose dataset: face or digit", required=True)
+    parser.add_argument("--algorithm", help="choose perceptron, naivebayes, mira, or ann", required=True)
+    parser.add_argument("--iterations", help="choose iterations for perceptron, and mira", type=int)
+    parser.add_argument("--percent", help="choose percentage of training data 0 - 100", type=int, required=True)
+    args = parser.parse_args()
 
-	test_matrix = []
-	i = 0
-	#print '\n'.join(digittestdata[0])
-	for d in digittestdata:
-	    #print "^"*50
-	    #print "\n".join(d)
-	    #print l
-	    #print "$"*50
-	    features = extract_features(d)
-	    test_matrix.append([i] + features)
-	    i+= 1
+    if args.percent < 1 or args.percent > 100:
+	print "error with percentage, must be from 1-100"
+	return
 
-	test_matrix = reduce_matrix_test(test_matrix)
+    if args.dataset == "face":
+	parse_training_data("facedata/facedatatrain", "facedata/facedatatrainlabels", 70, 60)
+	parse_testing_data("facedata/facedatatest", "facedata/facedatatestlabels", 70, 60)
+	train_matrix, test_matrix = loadData(args.percent)
+	runAlgo(args.algorithm, 2, args.iterations, train_matrix, test_matrix)
+    elif args.dataset == "digit":
+	parse_training_data("digitdata/trainingimages", "digitdata/traininglabels", 28, 30)
+	parse_testing_data("digitdata/testimages", "digitdata/testlabels", 28, 30)
+	train_matrix, test_matrix = loadData(args.percent)
+	runAlgo(args.algorithm, 10, args.iterations, train_matrix, test_matrix)
+    else:
+	print "error with dataset, must be digit or face"
+	return
 
-	#print "test_matrix"
-	#print test_matrix
-	#for test in test_matrix:
-	    #print len(test)
 
-	p = Perceptron(train_matrix, 10,test_matrix )
-	p.preprocess()
-	p.train_model()
-	testpredictions = p.test_model()
-	correct = 0
-	incorrect = 0
-	for prediction, label in zip(testpredictions, digittestlabels):
-	    if prediction == label:
-		correct += 1
-	    else:
-		incorrect +=1
-	    print "%s\t%s"%(prediction, label)
-	print "Final: %s"%(float(correct)/(correct + incorrect))
-    elif MODE == NAIVE_BAYES:
-	train_matrix = []
-	i = 0
-	for d,l in zip(digitdata, digitlabels):
-	    print "^"*50
-	    print "\n".join(d)
-	    print l
-	    print "$"*50
-	    features = extract_features(d)
-	    train_matrix.append([i] + features + [l])
-	    i+=1
-	train_matrix = reduce_matrix_train(train_matrix)
- #      # train_matrix = []
-	##classes = {}
-	##for i in range(0, 9):
-	    ##classes[i] = []
-	##for d,l in zip(digitdata, digitlabels):
-	    ##print "^"*50
-	    ##print "\n".join(d)
-	    ##print l
-	    ##print "$"*50
-	    ##classes[i].append(d)
-	##for c in classes:
-	    ##features = extract_features_naive(c)
-	    ##train_matrix.append([i] + features + [l])
- #      #     train_matrix = reduce_matrix_train(train_matrix)
-	#print "train_matrix"
-	#for train in train_matrix:
-	    #print len(train)
-	#print train_matrix
-	parse_testing_data()
-
-	test_matrix = []
-	i = 0
-	#print '\n'.join(digittestdata[0])
-	for d in digittestdata:
-	    #print "^"*50
-	    #print "\n".join(d)
-	    #print l
-	    #print "$"*50
-	    features = extract_features(d)
-	    test_matrix.append([i] + features)
-	    i+= 1
-
-	test_matrix = reduce_matrix_test(test_matrix)
-	nb = Naive_Bayes(train_matrix, 10,test_matrix )
-	nb.preprocess()
-	nb.train()
-	testpredictions = nb.test()
-	correct = 0
-	incorrect = 0
-	for prediction, label in zip(testpredictions, digittestlabels):
-	    if prediction == label:
-		correct += 1
-	    else:
-		incorrect +=1
-	    print "%s\t%s"%(prediction, label)
-	print "Final: %s"%(float(correct)/(correct + incorrect))
-
-    elif MODE==NN:
-	train_matrix = []
-	train_labels = []
-	i = 0
-	for d,l in zip(digitdata, digitlabels):
-	    #print "^"*50
-	    #print "\n".join(d)
-	    #print l
-	    #print "$"*50
-	    features = extract_features_nb(d)
-	    #train_matrix.append(features)
-	    labels = []
-	    for i in range(LABELS):
-		if i == l:
-			labels.append(1)
-		else:
-			labels.append(0)
-	    train_labels.append(labels)
-	    #train_labels.append(l)
-	    train_matrix.append(features)
-	    i+=1
-	train_matrix = reduce_matrix_train(train_matrix)
-	#print "train_matrix"
-	#for train in train_matrix:
-	    #print len(train)
-	#print train_matrix
-	parse_testing_data()
-
-	test_matrix = []
-	test_labels = []
-	i = 0
-	#print '\n'.join(digittestdata[0])
-	for d,l in zip(digittestdata, digittestlabels):
-	    #print "^"*50
-	    #print "\n".join(d)
-	    #print l
-	    #print "$"*50
-	    features = extract_features_nb(d)
-	    test_matrix.append(features)
-	    #test_matrix.append(features)
-	    test_labels.append(l)
-	    i+= 1
-
-	test_matrix = reduce_matrix_test(test_matrix)
-
-	#print "test_matrix"
-	#print test_matrix
-	#for test in test_matrix:
-	    #print len(test)
-
-	p = ANN(train_matrix,train_labels, 10,test_matrix)
-	p.train()
-	testpredictions = p.test()
-	correct = 0
-	incorrect = 0
-	for prediction, label in zip(testpredictions, digittestlabels):
-	    if prediction == label:
-		correct += 1
-	    else:
-		incorrect +=1
-	    print "%s\t%s"%(prediction, label)
-	print "Final: %s"%(float(correct)/(correct + incorrect))
-
-    elif MODE == M:
-	train_matrix = []
-	i = 0
-	for d,l in zip(digitdata, digitlabels):
-	    #print "^"*50
-	    #print "\n".join(d)
-	    #print l
-	    #print "$"*50
-	    features = extract_features(d)
-	    train_matrix.append(features + [l])
-	    i+=1
-	train_matrix = reduce_matrix_train(train_matrix)
-	#print "train_matrix"
-	#for train in train_matrix:
-	    #print len(train)
-	#print train_matrix
-	parse_testing_data()
-
-	test_matrix = []
-	i = 0
-	#print '\n'.join(digittestdata[0])
-	for d in digittestdata:
-	    #print "^"*50
-	    #print "\n".join(d)
-	    #print l
-	    #print "$"*50
-	    features = extract_features(d)
-	    test_matrix.append(features)
-	    i+= 1
-
-	test_matrix = reduce_matrix_test(test_matrix)
-
-	#print "test_matrix"
-	#print test_matrix
-	#for test in test_matrix:
-	    #print len(test)
-
-	p = MIRA(train_matrix, 10,test_matrix )
-	p.preprocess()
-	p.train_model()
-	testpredictions = p.test_model()
-	correct = 0
-	incorrect = 0
-	for prediction, label in zip(testpredictions, digittestlabels):
-	    if prediction == label:
-		correct += 1
-	    else:
-		incorrect +=1
-	    print "%s\t%s"%(prediction, label)
-	print "Final: %s"%(float(correct)/(correct + incorrect))
 main()

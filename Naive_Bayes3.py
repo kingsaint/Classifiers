@@ -14,10 +14,10 @@ class Naive_Bayes:
 		self.num_of_labels = num_of_labels
 		self.INSTANCES_OF_LABELS = {}
 
-	def train(self):
+	def train_model(self):
 	    for f in self.FEATURES.keys():
 		self.FEATURES[f] = numpy.unique(self.FEATURES[f])
-	    print self.FEATURES
+	    #print self.FEATURES
 	    for f in self.FEATURES_SPLITTED_ON_LABEL.keys():
 		if f not in self.FEATURES_COUNT.keys():
 		    self.FEATURES_COUNT[f] = {}
@@ -42,7 +42,7 @@ class Naive_Bayes:
 		    for k in self.FEATURES_COUNT[f][c]:
 			self.FEATURES_COUNT[f][c][k]+=float(counter)
 			self.FEATURES_COUNT[f][c][k] /= (len(self.FEATURES_SPLITTED_ON_LABEL[f][c])+len(self.FEATURES[f]))
-	    print self.FEATURES_COUNT
+	    #print self.FEATURES_COUNT
 
 
 
@@ -52,7 +52,7 @@ class Naive_Bayes:
 		if class_label not in self.INSTANCES_OF_LABELS.keys():
 		    self.INSTANCES_OF_LABELS[t[-1]] = 0
 		self.INSTANCES_OF_LABELS[t[-1]] +=1
-		for i in range(len(t[1:-1])):
+		for i in range(len(t[0:-1])):
 		    if i not in self.FEATURES.keys():
 			self.FEATURES[i] = []
 		    self.FEATURES[i].append(t[i+1])
@@ -66,26 +66,26 @@ class Naive_Bayes:
 	    for label in self.INSTANCES_OF_LABELS:
 		self.INSTANCES_OF_LABELS[label] /= float(len(self.training_data))
 
-	    print self.FEATURES
-	    print self.FEATURES_SPLITTED_ON_LABEL
-	    print self.INSTANCES_OF_LABELS
+	    #print self.FEATURES
+	    #print self.FEATURES_SPLITTED_ON_LABEL
+	    #print self.INSTANCES_OF_LABELS
 
-	def test(self):
+	def test_model(self):
 	    output = []
 	    for t in self.test_data:
 		posterior_prob = []
 		for l in range(self.num_of_labels):
 		    joint_prob = 1.0
-		    for f in range(1, len(t)):
-			if t[f] in self.FEATURES_COUNT[f-1][l]:
-			    joint_prob *= self.FEATURES_COUNT[f-1][l][t[f]]
+		    for f in range(0, len(t)):
+			if t[f] in self.FEATURES_COUNT[f][l]:
+			    joint_prob *= self.FEATURES_COUNT[f][l][t[f]]
 			else:
 			    joint_prob *= 1.0 / len(self.training_data)
 		    joint_prob*= self.INSTANCES_OF_LABELS[l]
 		    posterior_prob.append(joint_prob)
 
 		output.append(posterior_prob.index(max(posterior_prob)))
-	    print output
+	    #print output
 	    return output
 
 
