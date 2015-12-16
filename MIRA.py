@@ -36,7 +36,7 @@ class MIRA:
 
 
 	def train_model(self):
-	    c = .001
+	    c = .004
 	    for i in range(0,self.ITERATIONS):
 		    for j in self.training_data:
 			    if self.DEBUG: print "TRAINING TUPLE",j

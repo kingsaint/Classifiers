@@ -577,6 +577,38 @@ def extract_features(digit):
    return feature_1 + feature_2 + feature_3 + feature_4 + feature_5
    #return feature_5
 
+def extract_features_nb_face(digit):
+   feature_1 = get_loops_horizontal(digit)
+   feature_2 = get_block_density(digit)
+   feature_2 = []
+   feature_3_1 = get_filled_blocks3(feature_2)
+   #feature_3_2 = get_filled_blocks5(feature_2)
+   #feature_3_3 = get_filled_blocks7(feature_2)
+   feature_3 = feature_3_1# + feature_3_2 + feature_3_3
+   #feature_3 = []
+   feature_4 = get_loops(digit)
+   feature_5 = get_diagonals(digit)
+   #feature_5 = []
+   return feature_1 + feature_2 + feature_3 + feature_4 + feature_5
+   #return feature_5
+
+
+def extract_features_nb_digit(digit):
+   feature_1 = get_loops_horizontal(digit)
+   feature_2 = get_block_density(digit)
+   feature_2 = []
+   feature_3_1 = get_filled_blocks3(feature_2)
+   #feature_3_2 = get_filled_blocks5(feature_2)
+   #feature_3_3 = get_filled_blocks7(feature_2)
+   feature_3 = feature_3_1# + feature_3_2 + feature_3_3
+   #feature_3 = []
+   feature_4 = get_loops(digit)
+   feature_5 = get_diagonals(digit)
+   feature_6 = get_pixels(digit)
+   #feature_5 = []
+   return feature_1 + feature_2 + feature_3 + feature_4 + feature_5 + feature_6
+   #return feature_5
+
 reduce_features = []
 def reduce_matrix_train(matrix):
     print "Number of features before reduce: %s"%(len(matrix[0]))
@@ -611,13 +643,19 @@ def reduce_matrix_test(matrix):
     print "Number of features: %s"%(len(matrix[0]))
     return matrix
 
-def loadData(percent):
+def loadData(percent, algorithm, dataset):
     total = len(train_data)
     count = 0.0
     train_matrix = []
     for d,l in zip(train_data, train_data_labels):
 	count+=1
-	features = extract_features(d)
+	if algorithm == "naivebayes":
+	    if dataset == "face":
+		features = extract_features_nb_face(d)
+	    else:
+		features = extract_features_nb_digit(d)
+	else:
+	    features = extract_features(d)
 	train_matrix.append(features + [l])
 	if count/total*100 >= percent:
 	    break
@@ -625,7 +663,13 @@ def loadData(percent):
 
     test_matrix = []
     for d in test_data:
-	features = extract_features(d)
+	if algorithm == "naivebayes":
+	    if dataset == "face":
+		features = extract_features_nb_face(d)
+	    else:
+		features = extract_features_nb_digit(d)
+	else:
+	    features = extract_features(d)
 	test_matrix.append(features)
 
     test_matrix = reduce_matrix_test(test_matrix)
@@ -688,12 +732,12 @@ def main():
     if args.dataset == "face":
 	parse_training_data("facedata/facedatatrain", "facedata/facedatatrainlabels", 70, 60)
 	parse_testing_data("facedata/facedatatest", "facedata/facedatatestlabels", 70, 60)
-	train_matrix, test_matrix = loadData(args.percent)
+	train_matrix, test_matrix = loadData(args.percent, args.algorithm, args.dataset)
 	runAlgo(args.algorithm, 2, args.iterations, train_matrix, test_matrix)
     elif args.dataset == "digit":
 	parse_training_data("digitdata/trainingimages", "digitdata/traininglabels", 28, 30)
 	parse_testing_data("digitdata/testimages", "digitdata/testlabels", 28, 30)
-	train_matrix, test_matrix = loadData(args.percent)
+	train_matrix, test_matrix = loadData(args.percent, args.algorithm, args.dataset)
 	runAlgo(args.algorithm, 10, args.iterations, train_matrix, test_matrix)
     else:
 	print "error with dataset, must be digit or face"
