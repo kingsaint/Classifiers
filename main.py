@@ -1,6 +1,5 @@
-from Naive_Bayes3 import Naive_Bayes
+from Naive_Bayes import Naive_Bayes
 from Perceptron import Perceptron
-from ANN3 import ANN
 from MIRA import MIRA
 import operator
 import argparse
@@ -654,8 +653,6 @@ def runAlgo(algo, num_of_labels, iterations, train_matrix, test_matrix):
 		print "more than 1 iteration required"
 		return
 	p = MIRA(train_matrix, num_of_labels,test_matrix, iterations )
-    elif algo == "ann":
-	p = ANN(train_matrix, num_of_labels,test_matrix )
     else:
 	print "algo not found"
 	return
@@ -679,7 +676,7 @@ def runAlgo(algo, num_of_labels, iterations, train_matrix, test_matrix):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", help="choose dataset: face or digit", required=True)
-    parser.add_argument("--algorithm", help="choose perceptron, naivebayes, mira, or ann", required=True)
+    parser.add_argument("--algorithm", help="choose perceptron, naivebayes, mira", required=True)
     parser.add_argument("--iterations", help="choose iterations for perceptron, and mira", type=int)
     parser.add_argument("--percent", help="choose percentage of training data 0 - 100", type=int, required=True)
     args = parser.parse_args()
