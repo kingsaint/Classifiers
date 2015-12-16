@@ -65,7 +65,7 @@ class MIRA:
 
 				    diff_sum =	numpy.sum((numpy.array(self.LABEL_W_VECTORS[max_weight_index]) - numpy.array(self.LABEL_W_VECTORS[target_output]))*numpy.array(FEATURE))
 
-				    tau = min(c,(diff_sum + 1)/(2*f*f))
+				    tau = max(c,(diff_sum + 1)/(2*f*f))
 
 				    for k in range(len(FEATURE)):
 					    self.LABEL_W_VECTORS[target_output][k] += tau*FEATURE[k]
