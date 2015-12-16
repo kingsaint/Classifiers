@@ -36,13 +36,13 @@ class MIRA:
 
 
 	def train_model(self):
-	    c = .004
+	    c = .001
 	    for i in range(0,self.ITERATIONS):
 		    for j in self.training_data:
 			    if self.DEBUG: print "TRAINING TUPLE",j
-			    FEATURE = []
-			    for k in range(0,len(j)-1):
-				    FEATURE.append(j[k])
+			    FEATURE = j[0:-1]
+			    #for k in range(0,len(j)-1):
+				    #FEATURE.append(j[k])
 
 			    target_output = j[-1]
 
@@ -65,7 +65,7 @@ class MIRA:
 
 				    diff_sum =	numpy.sum((numpy.array(self.LABEL_W_VECTORS[max_weight_index]) - numpy.array(self.LABEL_W_VECTORS[target_output]))*numpy.array(FEATURE))
 
-				    tau = max(c,(diff_sum + 1)/(2*f*f))
+				    tau = min(c,(diff_sum + 1)/(2*f*f))
 
 				    for k in range(len(FEATURE)):
 					    self.LABEL_W_VECTORS[target_output][k] += tau*FEATURE[k]

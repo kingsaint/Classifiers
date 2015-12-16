@@ -600,7 +600,7 @@ def extract_features_nb_digit(digit):
    feature_3_1 = get_filled_blocks3(feature_2)
    feature_3_2 = get_filled_blocks5(feature_2)
    feature_3_3 = get_filled_blocks7(feature_2)
-   feature_3 = feature_3_1#+ feature_3_2 + feature_3_3
+   feature_3 =  feature_3_2 + feature_3_3
    #feature_3 = []
    feature_4 = get_loops(digit)
    feature_5 = get_diagonals(digit)
