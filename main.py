@@ -711,7 +711,7 @@ def runAlgo(algo, num_of_labels, iterations, train_matrix, test_matrix):
 	    correct += 1
 	else:
 	    incorrect +=1
-	print "%s\t%s"%(prediction, label)
+	#print "%s\t%s"%(prediction, label)
     print "Final: %s"%(float(correct)/(correct + incorrect))
     print "Total Time:%s sec"%((time.time() - start))
 
